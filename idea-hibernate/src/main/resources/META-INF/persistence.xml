@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+    <persistence-unit name="default">
+
+        <class>ru.hse.java.entities.Tracks</class>
+        <class>ru.hse.java.entities.Users</class>
+        <properties>
+            <property name="hibernate.connection.url"
+                      value="jdbc:mysql://37.140.192.245:3306/u1950683_elysium?useSSL=false"/>
+            <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="hibernate.connection.username" value="u1950683_root"/>
+            <property name="hibernate.connection.password" value="holdmybeer"/>
+        </properties>
+    </persistence-unit>
+</persistence>
