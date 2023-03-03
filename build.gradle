@@ -17,6 +17,7 @@ dependencies {
     implementation 'org.hibernate:hibernate-core:6.0.2.Final'
     implementation 'org.glassfish.jaxb:jaxb-runtime:3.0.2'
     implementation 'mysql:mysql-connector-java:8.0.32'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.0.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
