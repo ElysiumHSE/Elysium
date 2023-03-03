@@ -3,7 +3,10 @@ package ru.hse.java.entities;
 import jakarta.persistence.*;
 
 @Entity
-public class Tracks {
+@NamedQuery(name = "getTracksWithTrackIds",
+            query = "SELECT trackId, name, author, genre, mood, musicUrl, coverUrl, streams " +
+                    "FROM Track where trackId IN :track_id_set")
+public class Track {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "track_id")
@@ -99,7 +102,7 @@ public class Tracks {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Tracks tracks = (Tracks) o;
+        Track tracks = (Track) o;
 
         if (trackId != tracks.trackId) return false;
         if (name != null ? !name.equals(tracks.name) : tracks.name != null) return false;

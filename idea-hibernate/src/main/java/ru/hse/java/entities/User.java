@@ -3,7 +3,7 @@ package ru.hse.java.entities;
 import jakarta.persistence.*;
 
 @Entity
-public class Users {
+public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "user_id")
@@ -55,7 +55,7 @@ public class Users {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Users users = (Users) o;
+        User users = (User) o;
 
         if (userId != users.userId) return false;
         if (login != null ? !login.equals(users.login) : users.login != null) return false;
