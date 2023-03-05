@@ -7,11 +7,20 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @RestController
@@ -21,8 +30,18 @@ public class Controller {
     @Autowired
     private UserRepository userRepository;
 
+    @GetMapping("/")
+    ResponseEntity<List<UserEntity>> getUser1() {
+        return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/user")
+    public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
+        return principal.getAttributes();
+    }
+
     @GetMapping("/user/all")
-    ResponseEntity<List<UserEntity>> getUser(){
+    ResponseEntity<List<UserEntity>> getUser() {
         return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
     }
 
@@ -103,6 +122,8 @@ public class Controller {
 //            return new ResponseEntity<>(track, HttpStatus.OK);
 //        }
 //    }
+
+
 }
 
 class UserRegisterForm {

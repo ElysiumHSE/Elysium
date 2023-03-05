@@ -18,7 +18,16 @@ dependencies {
     implementation 'org.glassfish.jaxb:jaxb-runtime:3.0.2'
     implementation 'mysql:mysql-connector-java:8.0.32'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.0.3'
+    implementation 'org.springframework.boot:spring-boot-starter-security:3.0.3'
+    implementation 'org.springframework.security:spring-security-jwt:1.1.1.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:3.0.3'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
+
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test:6.0.2'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
 }
 
 tasks.named('test') {

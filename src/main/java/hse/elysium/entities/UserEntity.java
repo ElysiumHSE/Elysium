@@ -1,11 +1,18 @@
 package hse.elysium.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
+@Getter
+@Setter
 @Entity
-@Table(name = "User", schema = "u1950683_elysium", catalog = "")
+@Table(name = "User", schema = "u1950683_elysium")
 public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -20,38 +27,6 @@ public class UserEntity {
     @Basic
     @Column(name = "favourites")
     private String favourites;
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFavourites() {
-        return favourites;
-    }
-
-    public void setFavourites(String favourites) {
-        this.favourites = favourites;
-    }
 
     @Override
     public boolean equals(Object o) {

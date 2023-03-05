@@ -1,11 +1,15 @@
 package hse.elysium.entities;
 
 import jakarta.persistence.*;
+import lombok.Setter;
+import lombok.Getter;
 
 import java.util.Objects;
 
+@Getter
+@Setter
 @Entity
-@Table(name = "Track", schema = "u1950683_elysium", catalog = "")
+@Table(name = "Track", schema = "u1950683_elysium")
 public class TrackEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -32,70 +36,6 @@ public class TrackEntity {
     @Basic
     @Column(name = "streams")
     private Integer streams;
-
-    public int getTrackId() {
-        return trackId;
-    }
-
-    public void setTrackId(int trackId) {
-        this.trackId = trackId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public Object getGenre() {
-        return genre;
-    }
-
-    public void setGenre(Object genre) {
-        this.genre = genre;
-    }
-
-    public Object getMood() {
-        return mood;
-    }
-
-    public void setMood(Object mood) {
-        this.mood = mood;
-    }
-
-    public String getMusicUrl() {
-        return musicUrl;
-    }
-
-    public void setMusicUrl(String musicUrl) {
-        this.musicUrl = musicUrl;
-    }
-
-    public String getCoverUrl() {
-        return coverUrl;
-    }
-
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
-    }
-
-    public Integer getStreams() {
-        return streams;
-    }
-
-    public void setStreams(Integer streams) {
-        this.streams = streams;
-    }
 
     @Override
     public boolean equals(Object o) {
