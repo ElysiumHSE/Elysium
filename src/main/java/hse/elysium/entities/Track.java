@@ -1,4 +1,4 @@
-package ru.hse.java.entities;
+package hse.elysium.entities;
 
 import jakarta.persistence.*;
 

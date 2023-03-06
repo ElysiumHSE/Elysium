@@ -1,9 +1,4 @@
-package ru.hse.java.handler;
-
-import ru.hse.java.entities.Track;
-import ru.hse.java.entities.User;
-
-import java.util.Set;
+package hse.elysium.databaseInteractor;
 
 public class Main {
     public static void main(String[] args) {
@@ -35,5 +30,8 @@ public class Main {
         // Handler.incrementStreamsWithTrackId(3);
 
         // Handler.deleteUserWithUserId(14);
+
+        /*int result = UserService.deleteTrackFromFavouritesWithUserId(13, 3);
+        System.out.println(result);*/
     }
 }

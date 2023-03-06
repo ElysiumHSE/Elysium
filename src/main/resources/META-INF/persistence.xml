@@ -5,8 +5,8 @@
              version="3.0">
     <persistence-unit name="default">
 
-        <class>ru.hse.java.entities.Track</class>
-        <class>ru.hse.java.entities.User</class>
+        <class>hse.elysium.entities.Track</class>
+        <class>hse.elysium.entities.User</class>
         <properties>
             <property name="hibernate.connection.url"
                       value="jdbc:mysql://37.140.192.245:3306/u1950683_elysium?useSSL=false"/>
