@@ -13,41 +13,12 @@ public class Handler {
         entityManagerFactory = Persistence.createEntityManagerFactory("default");
     private static final EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-    private static final Query getUser = entityManager.createNativeQuery
-        ("SELECT * from User where User.user_id=:user_id", User.class);
-
-    private static final Query deleteUser = entityManager.createNativeQuery
-        ("DELETE from User where User.user_id=:user_id");
-
     private static final Query getUserIdWithLogin = entityManager.createNativeQuery
         ("SELECT user_id from User where User.login=:login");
-
-    private static final Query getUserFavourites = entityManager.createNativeQuery
-        ("SELECT favourites from User where User.user_id=:user_id", Track.class);
-
-    private static final Query updateUserFavourites = entityManager.createNativeQuery
-        ("UPDATE User SET favourites=:new_favourites where user_id=:user_id");
 
     @SuppressWarnings("unchecked")
     private static final TypedQuery<Track> getTracksWithTrackIds = (TypedQuery<Track>) entityManager.createNativeQuery
         ("SELECT * FROM Track where track_id IN :track_id_set", Track.class);
-
-    private static final Query getTrack = entityManager.createNativeQuery
-        ("SELECT * from Track where Track.track_id=:track_id", Track.class);
-
-    private static final Query updateTrack = entityManager.createNativeQuery
-        ("UPDATE Track " +
-                 "SET name=:name," +
-                 "author=:author," +
-                 "genre=:genre," +
-                 "mood=:mood," +
-                 "music_url=:music_url," +
-                 "cover_url=:cover_url," +
-                 "streams=:streams " +
-                 "WHERE track_id=:track_id");
-
-    private static final Query deleteTrack = entityManager.createNativeQuery
-        ("DELETE from Track where Track.track_id=:track_id");
 
     public static User getUserWithUserId(int user_id) {
         EntityTransaction transaction = entityManager.getTransaction();
@@ -55,8 +26,7 @@ public class Handler {
         try {
             transaction.begin();
 
-            getUser.setParameter("user_id", String.valueOf(user_id));
-            User user = (User)getUser.getSingleResult();
+            User user = entityManager.find(User.class, user_id);
 
             transaction.commit();
 
@@ -117,8 +87,7 @@ public class Handler {
         try {
             transaction.begin();
 
-            deleteUser.setParameter("user_id", String.valueOf(user_id));
-            deleteUser.executeUpdate();
+            entityManager.remove(user);
 
             transaction.commit();
 
@@ -189,19 +158,17 @@ public class Handler {
         try {
             transaction.begin();
 
-            getUserFavourites.setParameter("user_id", String.valueOf(user_id));
-            Object currentFavourites = getUserFavourites.getSingleResult();
+            User user = entityManager.getReference(User.class, user_id);
+            String currentFavourites = user.getFavourites();
 
             String newFavourites;
             if (currentFavourites == null) {
                 newFavourites = track_id + "|";
             } else {
-                newFavourites = currentFavourites.toString() + track_id + "|";
+                newFavourites = currentFavourites + track_id + "|";
             }
 
-            updateUserFavourites.setParameter("new_favourites", newFavourites);
-            updateUserFavourites.setParameter("user_id", String.valueOf(user_id));
-            updateUserFavourites.executeUpdate();
+            user.setFavourites(newFavourites);
 
             transaction.commit();
         } finally {
@@ -239,8 +206,7 @@ public class Handler {
         try {
             transaction.begin();
 
-            getTrack.setParameter("track_id", String.valueOf(track_id));
-            Track track = (Track)getTrack.getSingleResult();
+            Track track = entityManager.find(Track.class, track_id);
 
             transaction.commit();
 
@@ -292,15 +258,15 @@ public class Handler {
         try {
             transaction.begin();
 
-            updateTrack.setParameter("track_id", String.valueOf(updated_track.getTrackId()));
-            updateTrack.setParameter("name", updated_track.getName());
-            updateTrack.setParameter("author", updated_track.getAuthor());
-            updateTrack.setParameter("genre", updated_track.getGenre());
-            updateTrack.setParameter("mood", updated_track.getMood());
-            updateTrack.setParameter("music_url", updated_track.getMusicUrl());
-            updateTrack.setParameter("cover_url", updated_track.getCoverUrl());
-            updateTrack.setParameter("streams", String.valueOf(updated_track.getStreams()));
-            updateTrack.executeUpdate();
+            Track track = entityManager.getReference(Track.class, track_id);
+
+            track.setName(updated_track.getName());
+            track.setAuthor(updated_track.getAuthor());
+            track.setGenre(updated_track.getGenre());
+            track.setMood(updated_track.getMood());
+            track.setMusicUrl(updated_track.getMusicUrl());
+            track.setCoverUrl(updated_track.getCoverUrl());
+            track.setStreams(updated_track.getStreams());
 
             transaction.commit();
         } finally {
@@ -322,8 +288,7 @@ public class Handler {
         try {
             transaction.begin();
 
-            deleteTrack.setParameter("track_id", String.valueOf(track_id));
-            deleteTrack.executeUpdate();
+            entityManager.remove(track);
 
             transaction.commit();
 
@@ -336,15 +301,27 @@ public class Handler {
     }
 
     public static int incrementStreamsWithTrackId(int track_id) {
-        Track track = getTrackWithTrackId(track_id);
-        if (track == null) {
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        try {
+            transaction.begin();
+
+            Track track = entityManager.getReference(Track.class, track_id);
+
+            track.setStreams(track.getStreams() + 1);
+
+            transaction.commit();
+
+            return 1;
+
+        } catch (jakarta.persistence.NoResultException e) {
             return 0;
+
+        } finally {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
         }
-
-        track.setStreams(track.getStreams() + 1);
-        updateTrackAllParamsWithUpdatedTrack(track_id, track);
-
-        return 1;
     }
 
     public static void closeHandler() {

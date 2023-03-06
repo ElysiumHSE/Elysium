@@ -22,5 +22,18 @@ public class Main {
         if (result == 1) {
             System.out.println("going well");
         }*/
+        /*User user = Handler.getUserWithUserId(40);
+        if (user == null) {
+            System.out.println("null");
+        } else {
+            System.out.println(user.getLogin());
+        }
+        Handler.closeHandler();*/
+
+        // Handler.addTrackToFavouritesWithUserId(6, 2);
+
+        // Handler.incrementStreamsWithTrackId(3);
+
+        // Handler.deleteUserWithUserId(14);
     }
 }
