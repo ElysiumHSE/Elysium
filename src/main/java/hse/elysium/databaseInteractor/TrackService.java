@@ -4,40 +4,39 @@ import jakarta.persistence.*;
 
 import hse.elysium.entities.Track;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
 
 public class TrackService {
-    private static final EntityManagerFactory
+    private final EntityManagerFactory
         entityManagerFactory = Persistence.createEntityManagerFactory("default");
-    private static final EntityManager entityManager = entityManagerFactory.createEntityManager();
+    private final EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-    private static final Query getMaxTrackId = entityManager.createNativeQuery
+    private final Query getMaxTrackId = entityManager.createNativeQuery
         ("SELECT MAX(track_id) from Track");
 
     @SuppressWarnings("unchecked")
-    private static final TypedQuery<Track> getTracksWithTrackIdsQuery =
+    private final TypedQuery<Track> getTracksWithTrackIdsQuery =
         (TypedQuery<Track>)entityManager.createNativeQuery
-        ("SELECT * FROM Track where track_id IN :track_id_set", Track.class);
+        ("SELECT * FROM Track where track_id IN :track_id_array", Track.class);
 
     /**
      * Given Set of track_id's, finds matching records with corresponding track_id's
      * in Track database table.
-     * @return Set of Track objects, if at least one track_id from given Set was matched successfully,
+     * @return ArrayList of Track objects, if at least one track_id from given Set was matched successfully,
      * and null, if no matches were found.
      */
-    public static Set<Track> getTracksWithTrackIds(Set<Integer> setOfTrackIds) {
+    public ArrayList<Track> getTracksWithTrackIds(ArrayList<Integer> arrayOfTrackIds) {
         EntityTransaction transaction = entityManager.getTransaction();
+
+        ArrayList<Track> array;
 
         try {
             transaction.begin();
 
-            getTracksWithTrackIdsQuery.setParameter("track_id_set", setOfTrackIds);
-            Set<Track> set = new HashSet<>(getTracksWithTrackIdsQuery.getResultList());
+            getTracksWithTrackIdsQuery.setParameter("track_id_array", arrayOfTrackIds);
+            array = new ArrayList<>(getTracksWithTrackIdsQuery.getResultList());
 
             transaction.commit();
-
-            return set;
 
         } catch (jakarta.persistence.NoResultException e) {
             return null;
@@ -47,25 +46,26 @@ public class TrackService {
                 transaction.rollback();
             }
         }
+        return array;
     }
 
     /**
      * Given a track_id, finds matching record in Track database table.
      * @return Object of class Track, if matching record was found, and null otherwise.
      */
-    public static Track getTrackWithTrackId(int track_id) {
+    public Track getTrackWithTrackId(int track_id) {
         EntityTransaction transaction = entityManager.getTransaction();
+
+        Track track;
 
         try {
             transaction.begin();
 
-            Track track = entityManager.find(Track.class, track_id);
+            track = entityManager.find(Track.class, track_id);
 
             transaction.commit();
 
-            return track;
-
-        } catch (jakarta.persistence.NoResultException e) {
+        } catch (NoResultException | IllegalArgumentException e) {
             return null;
 
         } finally {
@@ -73,15 +73,15 @@ public class TrackService {
                 transaction.rollback();
             }
         }
+        return track;
     }
 
     /**
      * Given name, author, genre, mood, music_url and cover_url, adds a new record with given parameters
      * to Track database table. Value of streams of a new track record is set 0.
      * @return track_id of new record, if new record table was added to Track database successfully, and 0 otherwise.
-     * May throw hibernate exceptions (FIXME).
      */
-    public static int addNewTrackWithAllParams(String name, String author, String genre, String mood,
+    public int addNewTrackWithAllParams(String name, String author, String genre, String mood,
                                                String music_url, String cover_url) {
         EntityTransaction transaction = entityManager.getTransaction();
 
@@ -100,7 +100,7 @@ public class TrackService {
             entityManager.merge(track);
 
             transaction.commit();
-        } catch (Throwable e) {
+        } catch (IllegalArgumentException e) {
             return 0;
 
         } finally {
@@ -116,42 +116,41 @@ public class TrackService {
      * to Track database table. Values of music_url and cover_url are set null.
      * Value of streams of a new track record is set 0.
      * @return track_id of new record, if new record table was added to Track database successfully, and 0 otherwise.
-     * May throw hibernate exceptions (FIXME).
      */
-    public static int addNewTrackWithNameAuthorGenreMood(String name, String author, String genre, String mood) {
+    public int addNewTrackWithNameAuthorGenreMood(String name, String author, String genre, String mood) {
         return addNewTrackWithAllParams(name, author, genre, mood, null, null);
     }
 
     /**
      * Given Track object, updates parameters in matching record of Track database table.
      * @return 1, if parameters were updated successfully, and 0,
-     * if track_id of given Track object did not match any of Track database table records.
+     * if track_id of given Track object did not match any of Track database table records or
+     * given Track object is null.
      */
-    public static int updateTrackAllParamsWithUpdatedTrack(Track updated_track) {
+    public int updateTrackAllParamsWithUpdatedTrack(Track updated_track) {
+        if (updated_track == null) {
+            return 0;
+        }
+
         EntityTransaction transaction = entityManager.getTransaction();
 
-        try {
-            transaction.begin();
+        transaction.begin();
 
-            Track track = entityManager.getReference(Track.class, updated_track.getTrackId());
-            if (track == null) {
-                return 0;
-            }
-
-            track.setName(updated_track.getName());
-            track.setAuthor(updated_track.getAuthor());
-            track.setGenre(updated_track.getGenre());
-            track.setMood(updated_track.getMood());
-            track.setMusicUrl(updated_track.getMusicUrl());
-            track.setCoverUrl(updated_track.getCoverUrl());
-            track.setStreams(updated_track.getStreams());
-
-            transaction.commit();
-        } finally {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
+        Track track = entityManager.getReference(Track.class, updated_track.getTrackId());
+        if (track == null) {
+            return 0;
         }
+
+        track.setName(updated_track.getName());
+        track.setAuthor(updated_track.getAuthor());
+        track.setGenre(updated_track.getGenre());
+        track.setMood(updated_track.getMood());
+        track.setMusicUrl(updated_track.getMusicUrl());
+        track.setCoverUrl(updated_track.getCoverUrl());
+        track.setStreams(updated_track.getStreams());
+
+        transaction.commit();
+
         return 1;
     }
 
@@ -159,7 +158,7 @@ public class TrackService {
      * Given track_id, deletes matching record of Track database table.
      * @return Object of class Track representing the deleted record, if matching record was found, and null otherwise.
      */
-    public static Track deleteTrackWithTrackId(int track_id) {
+    public Track deleteTrackWithTrackId(int track_id) {
         Track track = getTrackWithTrackId(track_id);
 
         if (track == null) {
@@ -168,27 +167,20 @@ public class TrackService {
 
         EntityTransaction transaction = entityManager.getTransaction();
 
-        try {
-            transaction.begin();
+        transaction.begin();
 
-            entityManager.remove(track);
+        entityManager.remove(track);
 
-            transaction.commit();
+        transaction.commit();
 
-            return track;
-
-        } finally {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-        }
+        return track;
     }
 
     /**
      * Given track_id, increments number of streams in matching record of Track database table.
      * @return 1, if streams of matching record was incremented successfully, and 0, if matching record was not found.
      */
-    public static int incrementStreamsWithTrackId(int track_id) {
+    public int incrementStreamsWithTrackId(int track_id) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         try {
@@ -200,9 +192,7 @@ public class TrackService {
 
             transaction.commit();
 
-            return 1;
-
-        } catch (jakarta.persistence.NoResultException e) {
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
             return 0;
 
         } finally {
@@ -210,12 +200,13 @@ public class TrackService {
                 transaction.rollback();
             }
         }
+        return 1;
     }
 
     /**
      * Close entity manager and entity manager factory when finished working with class.
      */
-    public static void closeHandler() {
+    public void closeHandler() {
         entityManager.close();
         entityManagerFactory.close();
     }

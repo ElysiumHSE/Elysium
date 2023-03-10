@@ -4,17 +4,17 @@ import hse.elysium.entities.Track;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
 
 public class TrackServiceTests {
     @Test
     public void addGetDeleteTest() {
-        int track_id = TrackService.addNewTrackWithNameAuthorGenreMood
+        TrackService ts = new TrackService();
+        int track_id = ts.addNewTrackWithNameAuthorGenreMood
                        ("Рассвет", "Джизус", "Rock", "Sad");
         Assertions.assertNotEquals(0, track_id);
 
-        Track track = TrackService.getTrackWithTrackId(track_id);
+        Track track = ts.getTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
 
         Assertions.assertEquals("Рассвет", track.getName());
@@ -27,9 +27,9 @@ public class TrackServiceTests {
 
         track.setMusicUrl("sample/music/url");
         track.setCoverUrl("sample/cover/url");
-        Assertions.assertEquals(1, TrackService.updateTrackAllParamsWithUpdatedTrack(track));
+        Assertions.assertEquals(1, ts.updateTrackAllParamsWithUpdatedTrack(track));
 
-        track = TrackService.getTrackWithTrackId(track_id);
+        track = ts.getTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
 
         Assertions.assertEquals("Рассвет", track.getName());
@@ -40,7 +40,7 @@ public class TrackServiceTests {
         Assertions.assertEquals("sample/cover/url", track.getCoverUrl());
         Assertions.assertEquals(0, track.getStreams());
 
-        track = TrackService.deleteTrackWithTrackId(track_id);
+        track = ts.deleteTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
 
         Assertions.assertEquals("Рассвет", track.getName());
@@ -51,19 +51,22 @@ public class TrackServiceTests {
         Assertions.assertEquals("sample/cover/url", track.getCoverUrl());
         Assertions.assertEquals(0, track.getStreams());
 
-        track = TrackService.deleteTrackWithTrackId(track_id);
+        track = ts.deleteTrackWithTrackId(track_id);
         Assertions.assertNull(track);
+
+        ts.closeHandler();
     }
 
     @Test
     public void incrementTest() {
-        int track_id = TrackService.addNewTrackWithNameAuthorGenreMood
+        TrackService ts = new TrackService();
+        int track_id = ts.addNewTrackWithNameAuthorGenreMood
                        ("Рассвет", "Джизус", "Rock", "Sad");
         Assertions.assertNotEquals(0, track_id);
 
-        Assertions.assertEquals(1, TrackService.incrementStreamsWithTrackId(track_id));
+        Assertions.assertEquals(1, ts.incrementStreamsWithTrackId(track_id));
 
-        Track track = TrackService.getTrackWithTrackId(track_id);
+        Track track = ts.getTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
 
         Assertions.assertEquals("Рассвет", track.getName());
@@ -74,7 +77,7 @@ public class TrackServiceTests {
         Assertions.assertNull(track.getCoverUrl());
         Assertions.assertEquals(1, track.getStreams());
 
-        track = TrackService.deleteTrackWithTrackId(track_id);
+        track = ts.deleteTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
 
         Assertions.assertEquals("Рассвет", track.getName());
@@ -84,29 +87,36 @@ public class TrackServiceTests {
         Assertions.assertNull(track.getMusicUrl());
         Assertions.assertNull(track.getCoverUrl());
         Assertions.assertEquals(1, track.getStreams());
+
+        ts.closeHandler();
     }
 
     @Test
     public void getTracksWithTrackIdsTest() {
-        int track_id = TrackService.addNewTrackWithNameAuthorGenreMood
+        TrackService ts = new TrackService();
+        int track_id = ts.addNewTrackWithNameAuthorGenreMood
                         ("Рассвет", "Джизус", "Rock", "Sad");
         Assertions.assertNotEquals(0, track_id);
 
-        Set<Integer> set = new HashSet<>();
-        set.add(track_id);
-        Set<Track> tracks = TrackService.getTracksWithTrackIds(set);
-        for (Track track : tracks) {
-            Assertions.assertEquals("Рассвет", track.getName());
-            Assertions.assertEquals("Джизус", track.getAuthor());
-            Assertions.assertEquals("Rock", track.getGenre());
-            Assertions.assertEquals("Sad", track.getMood());
-            Assertions.assertNull(track.getMusicUrl());
-            Assertions.assertNull(track.getCoverUrl());
-            Assertions.assertEquals(0, track.getStreams());
-        }
+        ArrayList<Integer> array = new ArrayList<>();
+        array.add(track_id);
+        ArrayList<Track> tracks = ts.getTracksWithTrackIds(array);
+        Assertions.assertEquals(1, tracks.size());
 
-        Track track = TrackService.deleteTrackWithTrackId(track_id);
+        Track track = tracks.get(0);
+
+        Assertions.assertEquals("Рассвет", track.getName());
+        Assertions.assertEquals("Джизус", track.getAuthor());
+        Assertions.assertEquals("Rock", track.getGenre());
+        Assertions.assertEquals("Sad", track.getMood());
+        Assertions.assertNull(track.getMusicUrl());
+        Assertions.assertNull(track.getCoverUrl());
+        Assertions.assertEquals(0, track.getStreams());
+
+        track = ts.deleteTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
+
+        ts.closeHandler();
     }
 }
 
