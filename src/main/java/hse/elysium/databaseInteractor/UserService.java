@@ -1,5 +1,6 @@
 package hse.elysium.databaseInteractor;
 
+import hse.elysium.entities.Track;
 import jakarta.persistence.*;
 
 import hse.elysium.entities.User;
@@ -84,6 +85,33 @@ public class UserService {
             }
             return arrayOfTrackIds;
         }
+    }
+
+    /**
+     * Given user_id and password, updates password in matching record of User database table.
+     * @return 1, if password was updated successfully, and 0,
+     * if user_id did not match any of User database table records or
+     * given password String object is null.
+     */
+    public int changePasswordWithUserIdPassword(int user_id, String password) {
+        if (password == null) {
+            return 0;
+        }
+
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        transaction.begin();
+
+        User user = entityManager.getReference(User.class, user_id);
+        if (user == null) {
+            return 0;
+        }
+
+        user.setPassword(password);
+
+        transaction.commit();
+
+        return 1;
     }
 
     /**
