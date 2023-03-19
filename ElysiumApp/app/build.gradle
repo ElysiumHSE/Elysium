@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.elysiumapp'
+    namespace 'ru.hse.elysiumapp'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.elysiumapp"
+        applicationId "ru.hse.elysiumapp"
         minSdk 24
         targetSdk 33
         versionCode 1

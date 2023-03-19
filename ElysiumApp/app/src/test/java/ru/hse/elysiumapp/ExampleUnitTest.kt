@@ -1,4 +1,4 @@
-package com.example.elysiumapp
+package ru.hse.elysiumapp
 
 import org.junit.Test
 
