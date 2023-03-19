@@ -2,7 +2,6 @@ package com.plcoding.spotifycloneyt.ui.viewmodels
 
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,8 +12,11 @@ import com.plcoding.spotifycloneyt.exoplayer.MusicServiceConnection
 import com.plcoding.spotifycloneyt.exoplayer.isPlayEnabled
 import com.plcoding.spotifycloneyt.exoplayer.isPlaying
 import com.plcoding.spotifycloneyt.exoplayer.isPrepared
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MainViewModel @ViewModelInject constructor(
+@HiltViewModel
+class MainViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
     private val _mediaItems = MutableLiveData<Resource<List<Song>>>()

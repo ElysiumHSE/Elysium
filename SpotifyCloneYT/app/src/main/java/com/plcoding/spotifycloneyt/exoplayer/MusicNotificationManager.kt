@@ -26,18 +26,15 @@ class MusicNotificationManager(
 
     init {
         val mediaController = MediaControllerCompat(context, sessionToken)
-        notificationManager = PlayerNotificationManager.createWithNotificationChannel(
+        notificationManager = PlayerNotificationManager.Builder(
             context,
-            NOTIFICATION_CHANNEL_ID,
-            R.string.notification_channel_name,
-            R.string.notification_channel_description,
             NOTIFICATION_ID,
-            DescriptionAdapter(mediaController),
-            notificationListener
-        ).apply {
-            setSmallIcon(R.drawable.ic_music)
-            setMediaSessionToken(sessionToken)
-        }
+            NOTIFICATION_CHANNEL_ID)
+            .setChannelNameResourceId(R.string.notification_channel_name)
+            .setChannelDescriptionResourceId(R.string.notification_channel_description)
+            .setMediaDescriptionAdapter(DescriptionAdapter(mediaController))
+            .setNotificationListener(notificationListener)
+            .build()
     }
 
     fun showNotification(player: Player) {

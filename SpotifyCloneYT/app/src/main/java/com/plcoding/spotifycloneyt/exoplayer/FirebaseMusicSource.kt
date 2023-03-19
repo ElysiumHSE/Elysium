@@ -7,6 +7,7 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.MediaMetadataCompat.*
 import androidx.core.net.toUri
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
@@ -44,7 +45,7 @@ class FirebaseMusicSource @Inject constructor(
         val concatenatingMediaSource = ConcatenatingMediaSource()
         songs.forEach { song ->
             val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(song.getString(METADATA_KEY_MEDIA_URI).toUri())
+                .createMediaSource(MediaItem.fromUri(song.getString(METADATA_KEY_MEDIA_URI).toUri()))
             concatenatingMediaSource.addMediaSource(mediaSource)
         }
         return concatenatingMediaSource
