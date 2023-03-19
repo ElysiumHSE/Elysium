@@ -1,32 +1,38 @@
-package hse.elysium.serverspring;
+package hse.elysium.serverspring.controller;
 
+import hse.elysium.databaseInteractor.UserService;
 import hse.elysium.entities.User;
 import hse.elysium.serverspring.auth.AuthenticationService;
+import hse.elysium.serverspring.auth.JwtService;
 import hse.elysium.serverspring.auth.UserLoginPasswordForm;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import hse.elysium.databaseInteractor.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
+@ComponentScan("hse.elysium")
 @RequestMapping("/elysium")
 @RequiredArgsConstructor
 public class Controller {
 
     private final UserService userService;
+    private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
     @PostMapping("/test")
     ResponseEntity<String> testResponse(){
         return ResponseEntity.ok("Authorized");
+    }
+
+    @GetMapping("/getUserInfo")
+    ResponseEntity<User> getUserInfo(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        String username = jwtService.extractUsername(token);
+        int user_id = userService.getUserIdWithLogin(username);
+        return new ResponseEntity<>(userService.getUserWithUserId(user_id), HttpStatus.OK);
     }
 
     @PostMapping("/changePassword")

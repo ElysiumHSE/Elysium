@@ -22,7 +22,6 @@ public class AuthController {
         } else {
             return new ResponseEntity<>(res, HttpStatus.CREATED);
         }
-
     }
 
     /*
@@ -31,5 +30,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserLoginPasswordForm userRegisterForm) {
         return ResponseEntity.ok(authenticationService.login(userRegisterForm.getLogin(), userRegisterForm.getPassword()));
+    }
+
+    @RequestMapping("/bebra")
+    public Integer bebra() {
+        System.out.println(1);
+        return 1;
     }
 }

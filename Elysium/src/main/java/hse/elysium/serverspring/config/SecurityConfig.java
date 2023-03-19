@@ -1,4 +1,4 @@
-package hse.elysium.serverspring;
+package hse.elysium.serverspring.config;
 
 import hse.elysium.serverspring.auth.AuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,6 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
 
 @Configuration
