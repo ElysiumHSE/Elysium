@@ -41,4 +41,18 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    implementation 'androidx.fragment:fragment-ktx:1.5.5'
+
+    // Dagger Hilt
+    implementation "com.google.dagger:hilt-android:2.45"
+    annotationProcessor "com.google.dagger:hilt-compiler:2.45"
+
+    // For instrumentation tests
+    androidTestImplementation "com.google.dagger:hilt-android-testing:2.45"
+    androidTestAnnotationProcessor "com.google.dagger:hilt-compiler:2.45"
+
+    // For local unit tests
+    testImplementation "com.google.dagger:hilt-android-testing:2.45"
+    testAnnotationProcessor "com.google.dagger:hilt-compiler:2.45"
 }
