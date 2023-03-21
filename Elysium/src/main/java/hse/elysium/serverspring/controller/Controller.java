@@ -1,6 +1,8 @@
 package hse.elysium.serverspring.controller;
 
+import hse.elysium.databaseInteractor.TrackService;
 import hse.elysium.databaseInteractor.UserService;
+import hse.elysium.entities.Track;
 import hse.elysium.entities.User;
 import hse.elysium.serverspring.auth.AuthenticationService;
 import hse.elysium.serverspring.auth.JwtService;
@@ -18,12 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class Controller {
 
+    private final TrackService trackService;
     private final UserService userService;
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
     @PostMapping("/test")
-    ResponseEntity<String> testResponse(){
+    ResponseEntity<String> testResponse() {
         return ResponseEntity.ok("Authorized");
     }
 
@@ -40,10 +43,23 @@ public class Controller {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @RequestBody PasswordForm passwordForm) {
         var result = authenticationService.changePassword(token, passwordForm.getPassword());
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
     }
+
+    @GetMapping("/getTrackInfo")
+    ResponseEntity<Track> getTrackInfo(
+            @RequestParam int trackId) {
+        Track track = trackService.getTrackWithTrackId(trackId);
+        if (track == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>(track, HttpStatus.OK);
+        }
+    }
+
+
 }

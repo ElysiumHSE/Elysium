@@ -32,9 +32,4 @@ public class AuthController {
         return ResponseEntity.ok(authenticationService.login(userRegisterForm.getLogin(), userRegisterForm.getPassword()));
     }
 
-    @RequestMapping("/bebra")
-    public Integer bebra() {
-        System.out.println(1);
-        return 1;
-    }
 }
