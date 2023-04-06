@@ -1,15 +1,12 @@
 package ru.hse.elysiumapp.ui.activities
 
-import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
-import ru.hse.elysiumapp.R
 import ru.hse.elysiumapp.databinding.ActivityLoginBinding
 import ru.hse.elysiumapp.ui.viewmodels.LoggedInUserView
 import ru.hse.elysiumapp.ui.viewmodels.LoginErrorOccurred
@@ -32,7 +29,8 @@ class LoginActivity : AppCompatActivity() {
         val register = binding.register
         val loading = binding.loading
 
-        login.isEnabled = true;
+        login.isEnabled = true
+        register.isEnabled = true
 
         register.setOnClickListener {
             startActivity(Intent(this, RegistrationActivity::class.java))
