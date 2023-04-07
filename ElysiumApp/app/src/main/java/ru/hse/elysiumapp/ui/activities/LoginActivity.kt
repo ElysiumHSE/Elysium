@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
 import ru.hse.elysiumapp.databinding.ActivityLoginBinding
 import ru.hse.elysiumapp.ui.viewmodels.LoggedInUserView
@@ -29,7 +30,6 @@ class LoginActivity : AppCompatActivity() {
         val register = binding.register
         val loading = binding.loading
 
-        login.isEnabled = true
         register.isEnabled = true
 
         register.setOnClickListener {
@@ -50,9 +50,29 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
+        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
+            val loginFormState = it ?: return@Observer
+
+            login.isEnabled = loginFormState.isDataValid
+        })
+
         login.setOnClickListener {
             loading.visibility = View.VISIBLE
             loginViewModel.login(username.text.toString(), password.text.toString())
+        }
+
+        username.doAfterTextChanged {
+            loginViewModel.loginDataChanged(
+                username.text.toString(),
+                password.text.toString()
+            )
+        }
+
+        password.doAfterTextChanged {
+            loginViewModel.loginDataChanged(
+                username.text.toString(),
+                password.text.toString()
+            )
         }
     }
 

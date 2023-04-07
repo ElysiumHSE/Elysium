@@ -41,9 +41,15 @@ class RegistrationViewModel @Inject constructor(
     }
 
     fun registrationDataChanged(username: String, password: String, passwordConfirm: String) {
-        if (isPasswordValid(password, passwordConfirm)) {
+        if (isUsernameValid(username) && isPasswordValid(password, passwordConfirm)) {
             _registrationFormState.value = RegistrationFormState(isDataValid = true)
+        } else {
+            _registrationFormState.value = RegistrationFormState(isDataValid = false)
         }
+    }
+
+    private fun isUsernameValid(username: String) : Boolean {
+        return username.isNotEmpty()
     }
 
     private fun isPasswordValid(password: String, passwordConfirm: String) : Boolean {
