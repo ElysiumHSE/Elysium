@@ -3,9 +3,11 @@ package hse.elysium.databaseInteractor;
 import jakarta.persistence.*;
 
 import hse.elysium.entities.Token;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
+@Service
 public class TokenService {
     private final EntityManagerFactory
         entityManagerFactory = Persistence.createEntityManagerFactory("default");
