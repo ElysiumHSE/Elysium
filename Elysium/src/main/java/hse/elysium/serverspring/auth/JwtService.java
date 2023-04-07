@@ -6,16 +6,36 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "4A614E645267556B58703273357638792F413F4428472B4B6250655368566D59";
+    private final String SECRET_KEY;
+
+    JwtService() {
+        String SECRET_KEY1;
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("gradle.properties");
+            prop.load(input);
+            SECRET_KEY1 = prop.getProperty("JWT_SECRET_KEY");
+        } catch (IOException ex){
+            SECRET_KEY1 = "";
+            System.out.println("not found gradle.properties");
+        }
+        SECRET_KEY = SECRET_KEY1;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
