@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,12 +33,13 @@ public final class AuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final TokenService tokenService;
+    private final Logger log = LogManager.getLogger(AuthenticationFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("AuthenticationFilter.doFilterInternal");
+        log.info("AuthenticationFilter.doFilterInternal");
         final String token = request.getHeader("Authorization");
-        System.out.println(token);
+        log.info(token);
         if (token == null) {
             filterChain.doFilter(request, response);
             return;
@@ -54,10 +57,9 @@ public final class AuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userDetails, null, null);
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                System.out.println("Authentication set");
+                log.info("Authentication set");
             }
         }
-        System.out.println();
         filterChain.doFilter(request, response);
     }
 

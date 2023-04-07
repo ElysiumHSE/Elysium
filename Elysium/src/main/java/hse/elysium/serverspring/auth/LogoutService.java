@@ -4,6 +4,8 @@ import hse.elysium.databaseInteractor.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,16 +18,16 @@ import org.springframework.stereotype.Service;
 public class LogoutService implements LogoutHandler {
 
     private final TokenService tokenService;
+    private final Logger log = LogManager.getLogger(LogoutService.class);
+
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        System.out.println("LogoutService.logout");
+        log.info("LogoutService.logout");
         String token = request.getHeader("Authorization");
-        System.out.println(token);
+        log.info(token);
 
         tokenService.setRevokedWithTokenValue(token);
         SecurityContextHolder.getContext().setAuthentication(null);
-
-        System.out.println();
     }
 }

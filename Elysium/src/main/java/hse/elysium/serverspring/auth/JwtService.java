@@ -3,6 +3,8 @@ package hse.elysium.serverspring.auth;
 import hse.elysium.entities.User;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.*;
 
@@ -17,10 +19,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
+
 @Service
 public class JwtService {
 
     private final String SECRET_KEY;
+    private final Logger log = LogManager.getLogger(JwtService.class);
 
     JwtService() {
         String SECRET_KEY1;
@@ -32,9 +36,10 @@ public class JwtService {
             SECRET_KEY1 = prop.getProperty("JWT_SECRET_KEY");
         } catch (IOException ex){
             SECRET_KEY1 = "";
-            System.out.println("not found gradle.properties");
+            log.error("not found gradle.properties");
         }
         SECRET_KEY = SECRET_KEY1;
+        log.error("JWT secret key fetched");
     }
 
     public String extractUsername(String token) {

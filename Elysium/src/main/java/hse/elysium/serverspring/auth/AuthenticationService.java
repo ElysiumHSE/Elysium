@@ -4,6 +4,8 @@ import hse.elysium.databaseInteractor.TokenService;
 import hse.elysium.databaseInteractor.UserService;
 import hse.elysium.entities.User;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,22 +24,23 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final TokenService tokenService;
+    private final Logger log = LogManager.getLogger(AuthenticationService.class);
+
 
     public String register(String username, String password) {
-        System.out.println("AuthenticationService.register");
-        System.out.println(username);
-        System.out.println(password);
+        log.info("AuthenticationService.register");
+        log.info(username);
+        log.info(password);
 
         int userId = userService.addNewUserWithLoginPassword(username, passwordEncoder.encode(password));
         if (userId == -1){
             return "Already exists";
         }
-        System.out.println();
         return "Success";
     }
 
     public String login(String username, String password) {
-        System.out.println("AuthenticationService.login");
+        log.info("AuthenticationService.login");
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
 
@@ -55,7 +58,7 @@ public class AuthenticationService {
     }
 
     public Optional<UserLoginPasswordForm> changePassword(String token, String newPassword){
-        System.out.println("AuthenticationService.changePassword");
+        log.info("AuthenticationService.changePassword");
 
         String username = jwtService.extractUsername(token);
         int userId = userService.getUserIdWithLogin(username);
