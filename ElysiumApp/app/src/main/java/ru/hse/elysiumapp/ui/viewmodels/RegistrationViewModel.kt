@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ru.hse.elysiumapp.ui.network.AuthProvider
+import ru.hse.elysiumapp.ui.network.ErrorCode
 import javax.inject.Inject
 
 data class RegisteredUser(
@@ -25,7 +27,7 @@ data class RegistrationFormState(
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    // Registration Connection
+    private val authProvider: AuthProvider
 ) : ViewModel() {
 
     private val _registrationResult = MutableLiveData<RegistrationResult>()
@@ -35,9 +37,18 @@ class RegistrationViewModel @Inject constructor(
     val registrationFormState: LiveData<RegistrationFormState> = _registrationFormState
 
     fun register(username: String, password: String) {
-        // TODO: register on server
+        val result = authProvider.register(username, password)
         Thread.sleep(1000)
-        _registrationResult.value = RegistrationResult(success = RegisteredUser(message = "User is successfully registered"))
+        if (result == ErrorCode.OK) {
+            _registrationResult.value =
+                RegistrationResult(success = RegisteredUser(message = "$username is successfully registered"))
+        } else if (result == ErrorCode.REGISTER_USER_ALREADY_EXISTS) {
+            _registrationResult.value =
+                RegistrationResult(error = RegistrationErrorOccurred(message = "$username is already registered"))
+        } else if (result == ErrorCode.CALL_FAILURE) {
+            _registrationResult.value =
+                RegistrationResult(error = RegistrationErrorOccurred(message = "Something's wrong with network"))
+        }
     }
 
     fun registrationDataChanged(username: String, password: String, passwordConfirm: String) {
@@ -48,11 +59,11 @@ class RegistrationViewModel @Inject constructor(
         }
     }
 
-    private fun isUsernameValid(username: String) : Boolean {
+    private fun isUsernameValid(username: String): Boolean {
         return username.isNotEmpty()
     }
 
-    private fun isPasswordValid(password: String, passwordConfirm: String) : Boolean {
+    private fun isPasswordValid(password: String, passwordConfirm: String): Boolean {
         return password.isNotEmpty() && password == passwordConfirm
     }
 }

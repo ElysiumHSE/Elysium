@@ -41,6 +41,7 @@ public class AuthenticationService {
 
     public String login(String username, String password) {
         log.info("AuthenticationService.login");
+        log.info(username + " " + password);
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
 
@@ -51,9 +52,7 @@ public class AuthenticationService {
 
         tokenService.addNewTokenWithTokenValueUserId(token, userId);
 
-        System.out.println(token);
-        System.out.println(user.getLogin());
-        System.out.println();
+        log.info(token);
         return token;
     }
 

@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ru.hse.elysiumapp.ui.network.AuthProvider
+import ru.hse.elysiumapp.ui.network.ErrorCode
 import javax.inject.Inject
 
 data class LoggedInUserView(
@@ -25,19 +27,30 @@ data class LoginFormState(
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    // Login Connection
+    private val authProvider: AuthProvider
 ) : ViewModel() {
+
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
     private val _loginFormState = MutableLiveData<LoginFormState>()
-    val loginFormState : LiveData<LoginFormState> = _loginFormState
+    val loginFormState: LiveData<LoginFormState> = _loginFormState
 
     fun login(username: String, password: String) {
-        // TODO login on server, update loginResult
+        val result = authProvider.login(username, password)
         Thread.sleep(1_000)
-        _loginResult.value = LoginResult(success = LoggedInUserView(message = "I'm in"))
+        println("got result")
+        if (result == ErrorCode.OK) {
+            _loginResult.value =
+                LoginResult(success = LoggedInUserView(message = "Welcome, $username"))
+        } else if (result == ErrorCode.LOGIN_INCORRECT_DATA) {
+            _loginResult.value =
+                LoginResult(error = LoginErrorOccurred(message = "Wrong login or password"))
+        } else if (result == ErrorCode.CALL_FAILURE) {
+            _loginResult.value =
+                LoginResult(error = LoginErrorOccurred(message = "Something's wrong with network"))
+        }
     }
 
     fun loginDataChanged(username: String, password: String) {
@@ -48,11 +61,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun isUsernameValid(username: String) : Boolean {
+    private fun isUsernameValid(username: String): Boolean {
         return username.isNotEmpty()
     }
 
-    private fun isPasswordValid(password: String) : Boolean {
+    private fun isPasswordValid(password: String): Boolean {
         return password.isNotEmpty()
     }
 }

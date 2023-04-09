@@ -39,7 +39,7 @@ public class JwtService {
             log.error("not found gradle.properties");
         }
         SECRET_KEY = SECRET_KEY1;
-        log.error("JWT secret key fetched");
+        log.info("JWT secret key fetched");
     }
 
     public String extractUsername(String token) {
