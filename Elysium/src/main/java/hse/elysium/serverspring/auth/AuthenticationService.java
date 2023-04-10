@@ -33,9 +33,11 @@ public class AuthenticationService {
         log.info(password);
 
         int userId = userService.addNewUserWithLoginPassword(username, passwordEncoder.encode(password));
-        if (userId == -1){
+        if (userId == -1) {
+            log.info("Already exists");
             return "Already exists";
         }
+        log.info("Success");
         return "Success";
     }
 
@@ -43,7 +45,7 @@ public class AuthenticationService {
         log.info("AuthenticationService.login");
         log.info(username + " " + password);
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         int userId = userService.getUserIdWithLogin(username);
         if (userId == -1) return null;
@@ -56,17 +58,17 @@ public class AuthenticationService {
         return token;
     }
 
-    public Optional<UserLoginPasswordForm> changePassword(String token, String newPassword){
+    public Optional<UserLoginPasswordForm> changePassword(String token, String newPassword) {
         log.info("AuthenticationService.changePassword");
 
         String username = jwtService.extractUsername(token);
         int userId = userService.getUserIdWithLogin(username);
-        if (userId == -1){
+        if (userId == -1) {
             return Optional.empty();
         }
         userService.changePasswordWithUserIdPassword(userId, passwordEncoder.encode(newPassword));
         tokenService.setRevokedForUserChangedPasswordWithUserId(userId);
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,newPassword));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, newPassword));
 
         return Optional.of(new UserLoginPasswordForm(username, newPassword));
     }

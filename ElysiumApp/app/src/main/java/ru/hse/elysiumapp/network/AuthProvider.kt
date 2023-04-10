@@ -1,9 +1,10 @@
-package ru.hse.elysiumapp.ui.network
+package ru.hse.elysiumapp.network
 
 import com.google.gson.Gson
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import ru.hse.elysiumapp.other.Constants
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.util.concurrent.CountDownLatch
@@ -24,7 +25,7 @@ class AuthProvider {
         println(jsonString)
         val body = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request.Builder()
-            .url(CredentialsHolder.BASE_URL + "auth/login")
+            .url(Constants.BASE_URL + "auth/login")
             .post(body)
             .build()
         var errorCode = ErrorCode.OK
@@ -39,7 +40,7 @@ class AuthProvider {
             override fun onResponse(call: Call, response: Response) {
                 println(response.message)
                 if (response.code == HttpURLConnection.HTTP_OK) {
-                    CredentialsHolder.updateToken(response.message)
+                    CredentialsHolder.token = response.message
                 } else if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
                     errorCode = ErrorCode.LOGIN_INCORRECT_DATA
                 }
@@ -56,7 +57,7 @@ class AuthProvider {
         println(jsonString)
         val body = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request.Builder()
-            .url(CredentialsHolder.BASE_URL + "auth/register")
+            .url(Constants.BASE_URL + "auth/register")
             .post(body)
             .build()
         var errorCode = ErrorCode.OK

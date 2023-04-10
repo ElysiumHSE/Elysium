@@ -1,11 +1,12 @@
 package ru.hse.elysiumapp.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.hse.elysiumapp.ui.network.AuthProvider
-import ru.hse.elysiumapp.ui.network.ErrorCode
+import ru.hse.elysiumapp.network.AuthProvider
+import ru.hse.elysiumapp.network.ErrorCode
 import javax.inject.Inject
 
 data class LoggedInUserView(
@@ -39,8 +40,7 @@ class LoginViewModel @Inject constructor(
 
     fun login(username: String, password: String) {
         val result = authProvider.login(username, password)
-        Thread.sleep(1_000)
-        println("got result")
+        Log.println(Log.INFO, "login","got result")
         if (result == ErrorCode.OK) {
             _loginResult.value =
                 LoginResult(success = LoggedInUserView(message = "Welcome, $username"))

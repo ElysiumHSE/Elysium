@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ru.hse.elysiumapp.ui.network.AuthProvider
-import ru.hse.elysiumapp.ui.network.ErrorCode
+import ru.hse.elysiumapp.network.AuthProvider
+import ru.hse.elysiumapp.network.ErrorCode
 import javax.inject.Inject
 
 data class RegisteredUser(
@@ -38,7 +38,6 @@ class RegistrationViewModel @Inject constructor(
 
     fun register(username: String, password: String) {
         val result = authProvider.register(username, password)
-        Thread.sleep(1000)
         if (result == ErrorCode.OK) {
             _registrationResult.value =
                 RegistrationResult(success = RegisteredUser(message = "$username is successfully registered"))

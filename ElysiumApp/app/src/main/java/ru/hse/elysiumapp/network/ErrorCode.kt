@@ -1,4 +1,4 @@
-package ru.hse.elysiumapp.ui.network
+package ru.hse.elysiumapp.network
 
 enum class ErrorCode {
     OK,
