@@ -1,8 +1,10 @@
 package ru.hse.elysiumapp.ui.activities
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
@@ -59,6 +61,7 @@ class RegistrationActivity : AppCompatActivity() {
         })
 
         register.setOnClickListener {
+            closeKeyboard()
             loading.visibility = View.VISIBLE
             registrationViewModel.register(username.text.toString(), password.text.toString())
         }
@@ -86,5 +89,13 @@ class RegistrationActivity : AppCompatActivity() {
 
     private fun provideRegistrationSuccess(success: RegisteredUser) {
         Toast.makeText(applicationContext, success.message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun closeKeyboard() {
+        val view = this@RegistrationActivity.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 }

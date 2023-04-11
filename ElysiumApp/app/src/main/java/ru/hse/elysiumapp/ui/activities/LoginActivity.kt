@@ -1,9 +1,11 @@
 package ru.hse.elysiumapp.ui.activities
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
@@ -36,6 +38,7 @@ class LoginActivity : AppCompatActivity() {
         login.setBackgroundColor(resources.getColor(R.color.inactiveBlue))
 
         register.setOnClickListener {
+            closeKeyboard()
             startActivity(Intent(this, RegistrationActivity::class.java))
         }
 
@@ -65,6 +68,7 @@ class LoginActivity : AppCompatActivity() {
         })
 
         login.setOnClickListener {
+            closeKeyboard()
             loading.visibility = View.VISIBLE
             loginViewModel.login(username.text.toString(), password.text.toString())
         }
@@ -90,5 +94,13 @@ class LoginActivity : AppCompatActivity() {
 
     private fun provideLoginSuccess(success: LoggedInUserView) {
         Toast.makeText(applicationContext, success.message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun closeKeyboard() {
+        val view = this@LoginActivity.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 }
