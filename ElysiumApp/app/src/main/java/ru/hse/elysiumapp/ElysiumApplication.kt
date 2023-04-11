@@ -1,4 +1,4 @@
-package ru.hse.elysiumapp.ui
+package ru.hse.elysiumapp
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

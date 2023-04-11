@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.hse.elysiumapp.network.AuthProvider
-import ru.hse.elysiumapp.network.ErrorCode
+import ru.hse.elysiumapp.network.LoginError
 import javax.inject.Inject
 
 data class LoggedInUserView(
@@ -40,16 +40,25 @@ class LoginViewModel @Inject constructor(
 
     fun login(username: String, password: String) {
         val result = authProvider.login(username, password)
-        Log.println(Log.INFO, "login","got result")
-        if (result == ErrorCode.OK) {
-            _loginResult.value =
-                LoginResult(success = LoggedInUserView(message = "Welcome, $username"))
-        } else if (result == ErrorCode.LOGIN_INCORRECT_DATA) {
-            _loginResult.value =
-                LoginResult(error = LoginErrorOccurred(message = "Wrong login or password"))
-        } else if (result == ErrorCode.CALL_FAILURE) {
-            _loginResult.value =
-                LoginResult(error = LoginErrorOccurred(message = "Something's wrong with network"))
+        when (result) {
+            LoginError.OK -> {
+                _loginResult.value =
+                    LoginResult(success = LoggedInUserView(message = "Welcome, $username"))
+                Log.println(Log.INFO, "login", "logged in")
+            }
+            LoginError.INCORRECT_DATA -> {
+                _loginResult.value =
+                    LoginResult(error = LoginErrorOccurred(message = "Wrong login or password"))
+                Log.println(Log.INFO, "login", "Wrong login or password")
+            }
+            LoginError.CALL_FAILURE -> {
+                _loginResult.value =
+                    LoginResult(error = LoginErrorOccurred(message = "Something's wrong with network"))
+                Log.println(Log.INFO, "login", "Something's wrong with network")
+            }
+            else -> {
+                Log.println(Log.ERROR, "login", "Incorrect login behavior")
+            }
         }
     }
 

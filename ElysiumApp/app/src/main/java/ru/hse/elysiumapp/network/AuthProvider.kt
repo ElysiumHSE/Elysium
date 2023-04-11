@@ -1,5 +1,6 @@
 package ru.hse.elysiumapp.network
 
+import android.util.Log
 import com.google.gson.Gson
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -12,73 +13,65 @@ import java.util.concurrent.TimeUnit
 
 
 class AuthProvider {
-    private val client = OkHttpClient.Builder()
-        .pingInterval(1, TimeUnit.SECONDS)
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .writeTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(5, TimeUnit.SECONDS)
-        .retryOnConnectionFailure(false)
-        .build()
+    private val client =
+        OkHttpClient.Builder().pingInterval(1, TimeUnit.SECONDS).connectTimeout(5, TimeUnit.SECONDS)
+            .writeTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(false).build()
 
-    fun login(username: String, password: String): ErrorCode {
+    fun login(username: String, password: String): LoginError {
         val jsonString = Gson().toJson(LoginPasswordForm(username, password))
-        println(jsonString)
+        Log.println(Log.INFO, "login", jsonString)
         val body = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
-        val request = Request.Builder()
-            .url(Constants.BASE_URL + "auth/login")
-            .post(body)
-            .build()
-        var errorCode = ErrorCode.OK
+        val request = Request.Builder().url(Constants.BASE_URL + "auth/login").post(body).build()
+        var loginError = LoginError.OK
         val countDownLatch = CountDownLatch(1)
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                println("Error during call")
-                errorCode = ErrorCode.CALL_FAILURE
+                loginError = LoginError.CALL_FAILURE
                 countDownLatch.countDown()
             }
 
             override fun onResponse(call: Call, response: Response) {
-                println(response.message)
+                Log.println(Log.INFO, "login response message", response.message)
                 if (response.code == HttpURLConnection.HTTP_OK) {
                     CredentialsHolder.token = response.message
                 } else if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                    errorCode = ErrorCode.LOGIN_INCORRECT_DATA
+                    loginError = LoginError.INCORRECT_DATA
+                } else {
+                    loginError = LoginError.UNKNOWN_RESPONSE
                 }
                 countDownLatch.countDown()
 
             }
         })
         countDownLatch.await()
-        return errorCode
+        return loginError
     }
 
-    fun register(username: String, password: String): ErrorCode {
+    fun register(username: String, password: String): RegisterError {
         val jsonString = Gson().toJson(LoginPasswordForm(username, password))
         println(jsonString)
         val body = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
-        val request = Request.Builder()
-            .url(Constants.BASE_URL + "auth/register")
-            .post(body)
-            .build()
-        var errorCode = ErrorCode.OK
+        val request = Request.Builder().url(Constants.BASE_URL + "auth/register").post(body).build()
+        var registerError = RegisterError.OK
         val countDownLatch = CountDownLatch(1)
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                errorCode = ErrorCode.CALL_FAILURE
+                registerError = RegisterError.CALL_FAILURE
                 countDownLatch.countDown()
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if (response.code == HttpURLConnection.HTTP_BAD_REQUEST) {
-                    errorCode = ErrorCode.REGISTER_USER_ALREADY_EXISTS
+                    registerError = RegisterError.USER_ALREADY_EXISTS
                 } else if (response.code != HttpURLConnection.HTTP_CREATED) {
-                    errorCode = ErrorCode.UNKNOWN_RESPONSE
+                    registerError = RegisterError.UNKNOWN_RESPONSE
                 }
                 countDownLatch.countDown()
             }
 
         })
         countDownLatch.await()
-        return errorCode
+        return registerError
     }
 }

@@ -1,11 +1,12 @@
 package ru.hse.elysiumapp.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.hse.elysiumapp.network.AuthProvider
-import ru.hse.elysiumapp.network.ErrorCode
+import ru.hse.elysiumapp.network.RegisterError
 import javax.inject.Inject
 
 data class RegisteredUser(
@@ -38,15 +39,25 @@ class RegistrationViewModel @Inject constructor(
 
     fun register(username: String, password: String) {
         val result = authProvider.register(username, password)
-        if (result == ErrorCode.OK) {
-            _registrationResult.value =
-                RegistrationResult(success = RegisteredUser(message = "$username is successfully registered"))
-        } else if (result == ErrorCode.REGISTER_USER_ALREADY_EXISTS) {
-            _registrationResult.value =
-                RegistrationResult(error = RegistrationErrorOccurred(message = "$username is already registered"))
-        } else if (result == ErrorCode.CALL_FAILURE) {
-            _registrationResult.value =
-                RegistrationResult(error = RegistrationErrorOccurred(message = "Something's wrong with network"))
+        when (result) {
+            RegisterError.OK -> {
+                _registrationResult.value =
+                    RegistrationResult(success = RegisteredUser(message = "$username is successfully registered"))
+                Log.println(Log.INFO, "login", "$username registration successful")
+            }
+            RegisterError.USER_ALREADY_EXISTS -> {
+                _registrationResult.value =
+                    RegistrationResult(error = RegistrationErrorOccurred(message = "$username is already registered"))
+                Log.println(Log.INFO, "login", "$username already exists")
+            }
+            RegisterError.CALL_FAILURE -> {
+                _registrationResult.value =
+                    RegistrationResult(error = RegistrationErrorOccurred(message = "Something's wrong with network"))
+                Log.println(Log.INFO, "login", "Something's wrong with network")
+            }
+            else -> {
+                Log.println(Log.ERROR, "register", "Incorrect register behavior")
+            }
         }
     }
 
