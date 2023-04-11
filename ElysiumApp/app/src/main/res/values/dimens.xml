@@ -2,4 +2,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="log_in_and_register_buttons_width">160dp</dimen>
+    <dimen name="edit_text_padding">6dp</dimen>
+    <dimen name="button_padding">8dp</dimen>
 </resources>

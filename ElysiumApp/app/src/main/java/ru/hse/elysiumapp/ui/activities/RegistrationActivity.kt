@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
+import ru.hse.elysiumapp.R
 import ru.hse.elysiumapp.databinding.ActivityRegistrationBinding
 import ru.hse.elysiumapp.ui.viewmodels.RegisteredUser
 import ru.hse.elysiumapp.ui.viewmodels.RegistrationErrorOccurred
@@ -29,6 +30,8 @@ class RegistrationActivity : AppCompatActivity() {
         val register = binding.register
         val loading = binding.loading
 
+        register.setBackgroundColor(resources.getColor(R.color.inactiveBlue))
+
         registrationViewModel.registrationResult.observe(this@RegistrationActivity, Observer {
             val registrationResult = it ?: return@Observer
 
@@ -46,6 +49,11 @@ class RegistrationActivity : AppCompatActivity() {
             val registrationState = it ?: return@Observer
 
             register.isEnabled = registrationState.isDataValid
+            if (register.isEnabled) {
+                register.setBackgroundColor(resources.getColor(R.color.colorAccent))
+            } else {
+                register.setBackgroundColor(resources.getColor(R.color.inactiveBlue))
+            }
         })
 
         register.setOnClickListener {
