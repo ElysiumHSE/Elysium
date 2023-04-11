@@ -8,11 +8,13 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
+import dagger.hilt.android.AndroidEntryPoint
 import ru.hse.elysiumapp.databinding.ActivityLoginBinding
 import ru.hse.elysiumapp.ui.viewmodels.LoggedInUserView
 import ru.hse.elysiumapp.ui.viewmodels.LoginErrorOccurred
 import ru.hse.elysiumapp.ui.viewmodels.LoginViewModel
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     private val loginViewModel: LoginViewModel by viewModels()

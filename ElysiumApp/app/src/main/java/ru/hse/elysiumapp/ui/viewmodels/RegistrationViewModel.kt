@@ -1,9 +1,12 @@
 package ru.hse.elysiumapp.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ru.hse.elysiumapp.network.AuthProvider
+import ru.hse.elysiumapp.network.RegisterError
 import javax.inject.Inject
 
 data class RegisteredUser(
@@ -25,7 +28,7 @@ data class RegistrationFormState(
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    // Registration Connection
+    private val authProvider: AuthProvider
 ) : ViewModel() {
 
     private val _registrationResult = MutableLiveData<RegistrationResult>()
@@ -35,9 +38,27 @@ class RegistrationViewModel @Inject constructor(
     val registrationFormState: LiveData<RegistrationFormState> = _registrationFormState
 
     fun register(username: String, password: String) {
-        // TODO: register on server
-        Thread.sleep(1000)
-        _registrationResult.value = RegistrationResult(success = RegisteredUser(message = "User is successfully registered"))
+        val result = authProvider.register(username, password)
+        when (result) {
+            RegisterError.OK -> {
+                _registrationResult.value =
+                    RegistrationResult(success = RegisteredUser(message = "$username is successfully registered"))
+                Log.println(Log.INFO, "login", "$username registration successful")
+            }
+            RegisterError.USER_ALREADY_EXISTS -> {
+                _registrationResult.value =
+                    RegistrationResult(error = RegistrationErrorOccurred(message = "$username is already registered"))
+                Log.println(Log.INFO, "login", "$username already exists")
+            }
+            RegisterError.CALL_FAILURE -> {
+                _registrationResult.value =
+                    RegistrationResult(error = RegistrationErrorOccurred(message = "Something's wrong with network"))
+                Log.println(Log.INFO, "login", "Something's wrong with network")
+            }
+            RegisterError.UNKNOWN_RESPONSE -> {
+                Log.println(Log.ERROR, "register", "Unknown response")
+            }
+        }
     }
 
     fun registrationDataChanged(username: String, password: String, passwordConfirm: String) {
@@ -48,11 +69,11 @@ class RegistrationViewModel @Inject constructor(
         }
     }
 
-    private fun isUsernameValid(username: String) : Boolean {
+    private fun isUsernameValid(username: String): Boolean {
         return username.isNotEmpty()
     }
 
-    private fun isPasswordValid(password: String, passwordConfirm: String) : Boolean {
+    private fun isPasswordValid(password: String, passwordConfirm: String): Boolean {
         return password.isNotEmpty() && password == passwordConfirm
     }
 }

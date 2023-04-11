@@ -7,11 +7,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
+import dagger.hilt.android.AndroidEntryPoint
 import ru.hse.elysiumapp.databinding.ActivityRegistrationBinding
 import ru.hse.elysiumapp.ui.viewmodels.RegisteredUser
 import ru.hse.elysiumapp.ui.viewmodels.RegistrationErrorOccurred
 import ru.hse.elysiumapp.ui.viewmodels.RegistrationViewModel
-
+@AndroidEntryPoint
 class RegistrationActivity : AppCompatActivity() {
 
     private val registrationViewModel: RegistrationViewModel by viewModels()
