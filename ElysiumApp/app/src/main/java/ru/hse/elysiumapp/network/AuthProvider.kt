@@ -50,7 +50,7 @@ class AuthProvider {
 
     fun register(username: String, password: String): RegisterError {
         val jsonString = Gson().toJson(LoginPasswordForm(username, password))
-        println(jsonString)
+        Log.println(Log.INFO, "register", jsonString)
         val body = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request.Builder().url(Constants.BASE_URL + "auth/register").post(body).build()
         var registerError = RegisterError.OK
