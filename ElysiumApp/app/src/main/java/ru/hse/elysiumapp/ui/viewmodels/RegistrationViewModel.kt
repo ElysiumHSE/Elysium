@@ -55,8 +55,8 @@ class RegistrationViewModel @Inject constructor(
                     RegistrationResult(error = RegistrationErrorOccurred(message = "Something's wrong with network"))
                 Log.println(Log.INFO, "login", "Something's wrong with network")
             }
-            else -> {
-                Log.println(Log.ERROR, "register", "Incorrect register behavior")
+            RegisterError.UNKNOWN_RESPONSE -> {
+                Log.println(Log.ERROR, "register", "Unknown response")
             }
         }
     }

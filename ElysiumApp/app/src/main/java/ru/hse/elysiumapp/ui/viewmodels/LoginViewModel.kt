@@ -56,8 +56,8 @@ class LoginViewModel @Inject constructor(
                     LoginResult(error = LoginErrorOccurred(message = "Something's wrong with network"))
                 Log.println(Log.INFO, "login", "Something's wrong with network")
             }
-            else -> {
-                Log.println(Log.ERROR, "login", "Incorrect login behavior")
+            LoginError.UNKNOWN_RESPONSE -> {
+                Log.println(Log.ERROR, "login", "Unknown response")
             }
         }
     }
