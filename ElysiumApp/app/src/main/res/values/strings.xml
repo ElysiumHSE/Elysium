@@ -10,4 +10,7 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="action_register">Register</string>
+
+    <string name="notification_channel_name">Music Channel</string>
+    <string name="notification_channel_description">Shows the currently playing music</string>
 </resources>

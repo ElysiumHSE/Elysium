@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
+import ru.hse.elysiumapp.R
 import dagger.hilt.android.AndroidEntryPoint
 import ru.hse.elysiumapp.databinding.ActivityLoginBinding
 import ru.hse.elysiumapp.ui.viewmodels.LoggedInUserView
@@ -32,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         val register = binding.register
         val loading = binding.loading
 
-        register.isEnabled = true
+        login.setBackgroundColor(resources.getColor(R.color.inactiveBlue))
 
         register.setOnClickListener {
             startActivity(Intent(this, RegistrationActivity::class.java))
@@ -56,6 +57,11 @@ class LoginActivity : AppCompatActivity() {
             val loginFormState = it ?: return@Observer
 
             login.isEnabled = loginFormState.isDataValid
+            if (login.isEnabled) {
+                login.setBackgroundColor(resources.getColor(R.color.colorAccent))
+            } else {
+                login.setBackgroundColor(resources.getColor(R.color.inactiveBlue))
+            }
         })
 
         login.setOnClickListener {

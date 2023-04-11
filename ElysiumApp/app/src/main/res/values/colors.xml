@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="inactiveBlue">#5190ED</color>
+    <color name="secondaryText">#B3B3B3</color>
+    <color name="colorPrimary">#003EFF</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#0000EE</color>
+    <color name="mediumDarkBackground">#303030</color>
+    <color name="darkBackground">#121212</color>
+    <color name="lightBackground">#404040</color>
 </resources>
