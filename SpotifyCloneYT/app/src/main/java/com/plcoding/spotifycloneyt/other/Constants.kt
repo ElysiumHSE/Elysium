@@ -1,7 +1,9 @@
 package com.plcoding.spotifycloneyt.other
 
 object Constants {
-    const val SONG_COLLECTION = "songs"
+    const val DATABASE_USER = "" // Needs private params :)
+    const val DATABASE_PASSWORD = ""
+    const val JDBC_CONNECTION_URL = ""
 
     const val MEDIA_ROOT_ID = "root_id"
 
