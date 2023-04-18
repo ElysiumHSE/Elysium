@@ -10,6 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.hse.elysiumapp.R
+import ru.hse.elysiumapp.exoplayer.MusicServiceConnection
 import ru.hse.elysiumapp.network.AuthProvider
 import ru.hse.elysiumapp.network.Controller
 import javax.inject.Singleton
@@ -17,6 +18,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Singleton
+    @Provides
+    fun provideMusicServiceConnection(
+        @ApplicationContext context: Context
+    ) = MusicServiceConnection(context)
+
     @Singleton
     @Provides
     fun provideController() = Controller()
