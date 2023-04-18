@@ -34,6 +34,10 @@ class MusicNotificationManager(
             .setMediaDescriptionAdapter(DescriptionAdapter(mediaController))
             .setNotificationListener(notificationListener)
             .build()
+            .apply {
+                setSmallIcon(R.drawable.ic_music)
+                setMediaSessionToken(sessionToken)
+            }
     }
 
     fun showNotification(player: Player) {

@@ -10,6 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.hse.elysiumapp.R
+import ru.hse.elysiumapp.adapters.SwipeSongAdapter
 import ru.hse.elysiumapp.exoplayer.MusicServiceConnection
 import ru.hse.elysiumapp.network.AuthProvider
 import ru.hse.elysiumapp.network.Controller
@@ -24,6 +25,10 @@ object AppModule {
     fun provideMusicServiceConnection(
         @ApplicationContext context: Context
     ) = MusicServiceConnection(context)
+
+    @Singleton
+    @Provides
+    fun provideSwipeSongAdapter() = SwipeSongAdapter()
 
     @Singleton
     @Provides
