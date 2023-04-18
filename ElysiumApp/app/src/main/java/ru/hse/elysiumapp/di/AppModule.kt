@@ -13,6 +13,7 @@ import ru.hse.elysiumapp.R
 import ru.hse.elysiumapp.adapters.SwipeSongAdapter
 import ru.hse.elysiumapp.exoplayer.MusicServiceConnection
 import ru.hse.elysiumapp.network.AuthProvider
+import ru.hse.elysiumapp.network.Controller
 import javax.inject.Singleton
 
 @Module
@@ -28,6 +29,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideSwipeSongAdapter() = SwipeSongAdapter()
+
+    @Singleton
+    @Provides
+    fun provideController() = Controller()
 
     @Singleton
     @Provides

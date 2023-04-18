@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SongFragment : Fragment(R.layout.fragment_song) {
-    private lateinit var binding: FragmentSongBinding
+    lateinit var binding: FragmentSongBinding
 
     @Inject
     lateinit var glide: RequestManager
