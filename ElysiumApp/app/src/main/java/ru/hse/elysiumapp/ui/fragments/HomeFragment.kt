@@ -23,13 +23,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     lateinit var songAdapter: SongAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
+        super.onViewCreated(binding.root, savedInstanceState)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         setupRecyclerView()
         subscribeToObservers()
 
-        songAdapter.setOnItemClickListener {
+        songAdapter.setItemClickListener {
             mainViewModel.playOrToggleSong(it)
         }
     }

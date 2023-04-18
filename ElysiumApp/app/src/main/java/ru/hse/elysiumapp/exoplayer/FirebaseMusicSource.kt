@@ -1,6 +1,5 @@
 package ru.hse.elysiumapp.exoplayer
 
-import android.media.MediaMetadata
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
@@ -26,7 +25,7 @@ class FirebaseMusicSource @Inject constructor(
         state = STATE_INITIALIZING
         val allSongs = musicDatabase.getAllSongs()
         songs = allSongs.map { song ->
-            MediaMetadataCompat.Builder()
+            Builder()
                 .putString(METADATA_KEY_ARTIST, song.author)
                 .putString(METADATA_KEY_MEDIA_ID, song.mediaId)
                 .putString(METADATA_KEY_TITLE, song.title)
@@ -79,12 +78,12 @@ class FirebaseMusicSource @Inject constructor(
         }
 
     fun whenReady(action: (Boolean) -> Unit): Boolean {
-        if (state == STATE_CREATED || state == STATE_INITIALIZING) {
+        return if (state == STATE_CREATED || state == STATE_INITIALIZING) {
             onReadyListeners += action
-            return false
+            false
         } else {
             action(state == STATE_INITIALIZED)
-            return true
+            true
         }
     }
 }
