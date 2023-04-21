@@ -38,25 +38,29 @@ class RegistrationViewModel @Inject constructor(
     val registrationFormState: LiveData<RegistrationFormState> = _registrationFormState
 
     fun register(username: String, password: String) {
-        val result = authProvider.register(username, password)
-        when (result) {
-            RegisterError.OK -> {
-                _registrationResult.value =
-                    RegistrationResult(success = RegisteredUser(message = "$username is successfully registered"))
-                Log.println(Log.INFO, "login", "$username registration successful")
-            }
-            RegisterError.USER_ALREADY_EXISTS -> {
-                _registrationResult.value =
-                    RegistrationResult(error = RegistrationErrorOccurred(message = "$username is already registered"))
-                Log.println(Log.INFO, "login", "$username already exists")
-            }
-            RegisterError.CALL_FAILURE -> {
-                _registrationResult.value =
-                    RegistrationResult(error = RegistrationErrorOccurred(message = "Something's wrong with network"))
-                Log.println(Log.INFO, "login", "Something's wrong with network")
-            }
-            RegisterError.UNKNOWN_RESPONSE -> {
-                Log.println(Log.ERROR, "register", "Unknown response")
+        authProvider.register(username, password) { result ->
+            when (result) {
+                RegisterError.OK -> {
+                    _registrationResult.postValue(
+                        RegistrationResult(success = RegisteredUser(message = "$username is successfully registered"))
+                    )
+                    Log.println(Log.INFO, "login", "$username registration successful")
+                }
+                RegisterError.USER_ALREADY_EXISTS -> {
+                    _registrationResult.postValue(
+                        RegistrationResult(error = RegistrationErrorOccurred(message = "$username is already registered"))
+                    )
+                    Log.println(Log.INFO, "login", "$username already exists")
+                }
+                RegisterError.CALL_FAILURE -> {
+                    _registrationResult.postValue(
+                        RegistrationResult(error = RegistrationErrorOccurred(message = "Something's wrong with network"))
+                    )
+                    Log.println(Log.INFO, "login", "Something's wrong with network")
+                }
+                RegisterError.UNKNOWN_RESPONSE -> {
+                    Log.println(Log.ERROR, "register", "Unknown response")
+                }
             }
         }
     }
