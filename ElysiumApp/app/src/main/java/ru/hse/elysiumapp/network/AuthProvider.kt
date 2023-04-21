@@ -8,7 +8,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import ru.hse.elysiumapp.other.Constants
 import java.io.IOException
 import java.net.HttpURLConnection
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 
@@ -18,17 +17,16 @@ class AuthProvider {
             .writeTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS)
             .retryOnConnectionFailure(false).build()
 
-    fun login(username: String, password: String): LoginError {
+    fun login(username: String, password: String, callback: (LoginError) -> Unit) {
         val jsonString = Gson().toJson(LoginPasswordForm(username, password))
         Log.println(Log.INFO, "login", jsonString)
         val body = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request.Builder().url(Constants.BASE_URL + "auth/login").post(body).build()
         var loginError = LoginError.OK
-        val countDownLatch = CountDownLatch(1)
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 loginError = LoginError.CALL_FAILURE
-                countDownLatch.countDown()
+                callback.invoke(loginError)
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -40,25 +38,21 @@ class AuthProvider {
                 } else {
                     loginError = LoginError.UNKNOWN_RESPONSE
                 }
-                countDownLatch.countDown()
-
+                callback.invoke(loginError)
             }
         })
-        countDownLatch.await()
-        return loginError
     }
 
-    fun register(username: String, password: String): RegisterError {
+    fun register(username: String, password: String, callback: (RegisterError) -> Unit) {
         val jsonString = Gson().toJson(LoginPasswordForm(username, password))
         Log.println(Log.INFO, "register", jsonString)
         val body = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request.Builder().url(Constants.BASE_URL + "auth/register").post(body).build()
         var registerError = RegisterError.OK
-        val countDownLatch = CountDownLatch(1)
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 registerError = RegisterError.CALL_FAILURE
-                countDownLatch.countDown()
+                callback.invoke(registerError)
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -67,11 +61,8 @@ class AuthProvider {
                 } else if (response.code != HttpURLConnection.HTTP_CREATED) {
                     registerError = RegisterError.UNKNOWN_RESPONSE
                 }
-                countDownLatch.countDown()
+                callback.invoke(registerError)
             }
-
         })
-        countDownLatch.await()
-        return registerError
     }
 }
