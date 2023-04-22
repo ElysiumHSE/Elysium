@@ -11,7 +11,7 @@ public class TrackServiceTests {
     public void addGetDeleteTest() {
         TrackService ts = new TrackService();
         int track_id = ts.addNewTrackWithNameAuthorGenreMood
-                       ("Рассвет", "Джизус", "Rock", "Sad");
+                ("Рассвет", "Джизус", "Rock", "Sad");
         Assertions.assertNotEquals(0, track_id);
 
         Track track = ts.getTrackWithTrackId(track_id);
@@ -27,7 +27,7 @@ public class TrackServiceTests {
 
         track.setMusicUrl("sample/music/url");
         track.setCoverUrl("sample/cover/url");
-        Assertions.assertEquals(1, ts.updateTrackAllParamsWithUpdatedTrack(track));
+        Assertions.assertTrue(ts.updateTrackAllParamsWithUpdatedTrack(track));
 
         track = ts.getTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
@@ -61,10 +61,10 @@ public class TrackServiceTests {
     public void incrementTest() {
         TrackService ts = new TrackService();
         int track_id = ts.addNewTrackWithNameAuthorGenreMood
-                       ("Рассвет", "Джизус", "Rock", "Sad");
+                ("Рассвет", "Джизус", "Rock", "Sad");
         Assertions.assertNotEquals(0, track_id);
 
-        Assertions.assertEquals(1, ts.incrementStreamsWithTrackId(track_id));
+        Assertions.assertTrue(ts.incrementStreamsWithTrackId(track_id));
 
         Track track = ts.getTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
@@ -95,7 +95,7 @@ public class TrackServiceTests {
     public void getTracksWithTrackIdsTest() {
         TrackService ts = new TrackService();
         int track_id = ts.addNewTrackWithNameAuthorGenreMood
-                        ("Рассвет", "Джизус", "Rock", "Sad");
+                ("Рассвет", "Джизус", "Rock", "Sad");
         Assertions.assertNotEquals(0, track_id);
 
         ArrayList<Integer> array = new ArrayList<>();
@@ -118,5 +118,12 @@ public class TrackServiceTests {
 
         ts.closeHandler();
     }
-}
 
+    @Test
+    public void getAllTracksDummyTest() {
+        TrackService ts = new TrackService();
+        ArrayList<Track> result = ts.getAllTracks();
+        Assertions.assertNotNull(result);
+        // Assertions.assertEquals(4, result.size());
+    }
+}
