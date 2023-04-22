@@ -34,6 +34,7 @@ object MusicService {
                 when (response.code) {
                     (HttpURLConnection.HTTP_UNAUTHORIZED) -> {
                         result = emptyList()
+                        Log.println(Log.WARN, "Unauthorized", "You are suddenly unauthorized")
                     }
                     (HttpURLConnection.HTTP_INTERNAL_ERROR) -> {
                         result = emptyList()
