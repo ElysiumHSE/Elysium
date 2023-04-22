@@ -27,7 +27,7 @@ public class TrackServiceTests {
 
         track.setMusicUrl("sample/music/url");
         track.setCoverUrl("sample/cover/url");
-        Assertions.assertEquals(1, ts.updateTrackAllParamsWithUpdatedTrack(track));
+        Assertions.assertTrue(ts.updateTrackAllParamsWithUpdatedTrack(track));
 
         track = ts.getTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
@@ -64,7 +64,7 @@ public class TrackServiceTests {
                        ("Рассвет", "Джизус", "Rock", "Sad");
         Assertions.assertNotEquals(0, track_id);
 
-        Assertions.assertEquals(1, ts.incrementStreamsWithTrackId(track_id));
+        Assertions.assertTrue(ts.incrementStreamsWithTrackId(track_id));
 
         Track track = ts.getTrackWithTrackId(track_id);
         Assertions.assertNotEquals(null, track);
@@ -117,6 +117,14 @@ public class TrackServiceTests {
         Assertions.assertNotEquals(null, track);
 
         ts.closeHandler();
+    }
+
+    @Test
+    public void getAllTracksDummyTest() {
+        TrackService ts = new TrackService();
+        ArrayList<Track> result = ts.getAllTracks();
+        Assertions.assertNotNull(result);
+        // Assertions.assertEquals(4, result.size());
     }
 }
 

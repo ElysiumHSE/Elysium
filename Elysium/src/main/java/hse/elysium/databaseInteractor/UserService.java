@@ -94,13 +94,13 @@ public class UserService implements UserDetailsService {
 
     /**
      * Given user_id and password, updates password in matching record of User database table.
-     * @return 1, if password was updated successfully, and 0,
+     * @return true, if password was updated successfully, and false,
      * if user_id did not match any of User database table records or
      * given password String object is null.
      */
-    public int changePasswordWithUserIdPassword(int user_id, String password) {
+    public boolean changePasswordWithUserIdPassword(int user_id, String password) {
         if (password == null) {
-            return 0;
+            return false;
         }
 
         EntityTransaction transaction = entityManager.getTransaction();
@@ -109,14 +109,14 @@ public class UserService implements UserDetailsService {
 
         User user = entityManager.getReference(User.class, user_id);
         if (user == null) {
-            return 0;
+            return false;
         }
 
         user.setPassword(password);
 
         transaction.commit();
 
-        return 1;
+        return true;
     }
 
     /**
