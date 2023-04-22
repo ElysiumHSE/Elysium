@@ -9,15 +9,11 @@ import ru.hse.elysiumapp.other.Constants
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 
 class AuthProvider {
-    private val client =
-        OkHttpClient.Builder().pingInterval(1, TimeUnit.SECONDS).connectTimeout(5, TimeUnit.SECONDS)
-            .writeTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS)
-            .retryOnConnectionFailure(false).build()
 
+    val client = CredentialsHolder.client
     fun login(username: String, password: String): LoginError {
         val jsonString = Gson().toJson(LoginPasswordForm(username, password))
         Log.println(Log.INFO, "login", jsonString)
@@ -34,7 +30,7 @@ class AuthProvider {
             override fun onResponse(call: Call, response: Response) {
                 Log.println(Log.INFO, "login response message", response.message)
                 if (response.code == HttpURLConnection.HTTP_OK) {
-                    CredentialsHolder.token = response.message
+                    CredentialsHolder.token = response.body!!.string()
                 } else if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
                     loginError = LoginError.INCORRECT_DATA
                 } else {
