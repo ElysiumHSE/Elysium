@@ -3,6 +3,7 @@ package hse.elysium.serverspring.controller;
 import hse.elysium.databaseInteractor.UserService;
 import hse.elysium.entities.User;
 import hse.elysium.serverspring.auth.JwtService;
+import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
@@ -24,8 +25,12 @@ public class UserController {
     ResponseEntity<User> getUserInfo(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         String username = jwtService.extractUsername(token);
-        int user_id = userService.getUserIdWithLogin(username);
-        return new ResponseEntity<>(userService.getUserWithUserId(user_id), HttpStatus.OK);
+        try {
+            int user_id = userService.getUserIdWithLogin(username);
+            return new ResponseEntity<>(userService.getUserWithUserId(user_id), HttpStatus.OK);
+        } catch (NoResultException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 

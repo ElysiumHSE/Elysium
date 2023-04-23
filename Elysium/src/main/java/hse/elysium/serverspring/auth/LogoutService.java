@@ -1,6 +1,7 @@
 package hse.elysium.serverspring.auth;
 
 import hse.elysium.databaseInteractor.TokenService;
+import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,11 @@ public class LogoutService implements LogoutHandler {
         String token = request.getHeader("Authorization");
         log.info(token);
 
-        tokenService.setRevokedWithTokenValue(token);
+        try {
+            tokenService.setRevokedWithTokenValue(token);
+        } catch (NoResultException e){
+            log.info("Incorrect token in logout");
+        }
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 }
