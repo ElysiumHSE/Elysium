@@ -29,9 +29,7 @@ public class TokenServiceTests {
             ts.addNewTokenWithTokenValueUserId("remove_kebab2", 1488);
         });
 
-        Assertions.assertDoesNotThrow(() -> {
-            ts.setRevokedForUserChangedPasswordWithUserId(1488);
-        });
+        Assertions.assertDoesNotThrow(() -> ts.setRevokedForUserChangedPasswordWithUserId(1488));
 
         token = ts.getTokenWithTokenValue("remove_kebab");
 

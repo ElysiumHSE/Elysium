@@ -1,6 +1,5 @@
 package hse.elysium.databaseInteractor;
 
-import hse.elysium.entities.Track;
 import jakarta.persistence.*;
 
 import hse.elysium.entities.User;
@@ -10,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -75,9 +75,9 @@ public class UserService implements UserDetailsService {
 
     /**
      * Given a user_id, finds favourites of corresponding user in a matching record of User database table.
-     * @return ArrayList of Integers, if matching record was found, and null otherwise.
+     * @return List of Integers, if matching record was found, and null otherwise.
      */
-    public ArrayList<Integer> getUserFavouritesWithUserId(int user_id) {
+    public List<Integer> getUserFavouritesWithUserId(int user_id) {
         User user = getUserWithUserId(user_id);
         if (user == null) {
             return null;
@@ -143,42 +143,48 @@ public class UserService implements UserDetailsService {
 
     /**
      * Given a login, finds user_id of matching record in User database table.
-     * @return user_id of corresponding user, if matching record was found, and -1, if matching record was not found.
+     * @return user_id of corresponding user, if matching record was found.
+     * @throws jakarta.persistence.NoResultException, if matching record was not found.
      */
-    public int getUserIdWithLogin(String login) {
+    public int getUserIdWithLogin(String login) throws NoResultException {
         EntityTransaction transaction = entityManager.getTransaction();
 
-        int user_id;
+        int userId;
 
         try {
             transaction.begin();
 
             getUserIdWithLoginQuery.setParameter("login", login);
-            user_id = (int) getUserIdWithLoginQuery.getSingleResult();
+            userId = (int) getUserIdWithLoginQuery.getSingleResult();
 
             transaction.commit();
-
-        } catch (jakarta.persistence.NoResultException e) {
-            return -1;
 
         } finally {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
         }
-        return user_id;
+        return userId;
     }
 
     /**
      * Given login, password and favourites of a new user, creates a new corresponding record in User database table.
-     * @return user_id of new user, if adding new record to User database table was successful,
-     * and -1, if user with corresponding login already exists.
+     * @return user_id of new user, if adding new record to User database table was successful.
+     * @throws jakarta.persistence.PersistenceException, if user with matching login already exists.
      */
-    public int addNewUserWithAllParams(String login, String password, String favourites) {
-        int user_id = getUserIdWithLogin(login);
+    public int addNewUserWithAllParams(String login, String password, String favourites)
+            throws PersistenceException {
 
-        if (user_id != -1) {
-            return -1;
+        int userId;
+        try {
+            userId = getUserIdWithLogin(login);
+        } catch (jakarta.persistence.NoResultException e) {
+            userId = -1;
+        }
+
+        if (userId != -1) {
+            throw new jakarta.persistence.PersistenceException
+                    ("user with corresponding login already exists");
         }
 
         EntityTransaction transaction = entityManager.getTransaction();
@@ -194,41 +200,42 @@ public class UserService implements UserDetailsService {
 
         transaction.commit();
 
-        user_id = getUserIdWithLogin(login);
-        return user_id;
+        userId = getUserIdWithLogin(login);
+        return userId;
     }
 
     /**
      * Given login and password of a new user, creates a new corresponding record in User database table.
-     * @return user_id of new user, if adding new record to User database table was successful,
-     * and -1, if user with corresponding login already exists.
+     * @return user_id of new user, if adding new record to User database table was successful.
+     * @throws jakarta.persistence.PersistenceException, if user with matching login already exists.
      */
-    public int addNewUserWithLoginPassword(String login, String password) {
+    public int addNewUserWithLoginPassword(String login, String password) throws PersistenceException {
         return addNewUserWithAllParams(login, password, null);
     }
 
     /**
      * Given user_id and track_id, finds track with corresponding track_id in user's favourites
      * in a corresponding record in User database table.
-     * @return index of favourites' string, if track with corresponding track_id was found,
-     * -1, if track was not found, and -2, if user was not found.
+     * @return index of favourites' string, if track with corresponding track_id was found.
+     * @throws jakarta.persistence.NoResultException, if track was not found.
+     * @throws jakarta.persistence.PersistenceException, if user was not found.
      */
-    public int findTrackInUserFavourites(int user_id, int track_id) {
+    public int findTrackInUserFavourites(int user_id, int track_id) throws NoResultException, PersistenceException {
         User user = getUserWithUserId(user_id);
         if (user == null) {
-            return -2;
+            throw new jakarta.persistence.PersistenceException("user was not found");
         }
 
         String currentFavourites = user.getFavourites();
 
         if (currentFavourites == null) {
-            return -1;
+            throw new jakarta.persistence.NoResultException("track was not found");
         } else {
             int trackIdx = currentFavourites.indexOf("|" + track_id + "|");
             if (trackIdx == -1) {
                 trackIdx = currentFavourites.indexOf(track_id + "|");
                 if (trackIdx != 0) {
-                    return -1;
+                    throw new jakarta.persistence.NoResultException("track was not found");
                 } else {
                     return trackIdx;
                 }
@@ -241,17 +248,20 @@ public class UserService implements UserDetailsService {
     /**
      * Given user_id and track_id, adds track with corresponding track_id to user's favourites
      * in a corresponding record in User database table.
-     * @return 1, if track with corresponding track_id was added to favourites successfully,
-     * 0, if track is already in favourites, and -1, if user_id is invalid.
+     * @return true, if track with corresponding track_id was added to favourites successfully,
+     * and false, if track is already in favourites.
+     * @throws jakarta.persistence.PersistenceException, if user_id is invalid.
      */
-    public int addTrackToFavouritesWithUserId(int user_id, int track_id) {
-        int trackIdx = findTrackInUserFavourites(user_id, track_id);
-
-        if (trackIdx == -2) {
-            return -1;
+    public boolean addTrackToFavouritesWithUserId(int user_id, int track_id) throws PersistenceException {
+        int trackIdx;
+        try {
+            trackIdx = findTrackInUserFavourites(user_id, track_id);
+        } catch (jakarta.persistence.NoResultException e) {
+            trackIdx = -1;
         }
+
         if (trackIdx >= 0) {
-            return 0;
+            return false;
         }
 
         EntityTransaction transaction = entityManager.getTransaction();
@@ -272,23 +282,26 @@ public class UserService implements UserDetailsService {
 
         transaction.commit();
 
-        return 1;
+        return true;
     }
 
     /**
      * Given user_id and track_id, deletes track with corresponding track_id from user's favourites
      * in a corresponding record in User database table.
-     * @return 1, if track with corresponding track_id was deleted from favourites successfully,
-     * 0, if track was not found in favourites, and -1, if user_id is invalid.
+     * @return true, if track with corresponding track_id was deleted from favourites successfully,
+     * and false, if track was not found in favourites.
+     * @throws jakarta.persistence.PersistenceException, if user_id is invalid.
      */
-    public int deleteTrackFromFavouritesWithUserId(int user_id, int track_id) {
-        int trackIdx = findTrackInUserFavourites(user_id, track_id);
-
-        if (trackIdx == -2) {
-            return -1;
+    public boolean deleteTrackFromFavouritesWithUserId(int user_id, int track_id) throws PersistenceException {
+        int trackIdx;
+        try {
+            trackIdx = findTrackInUserFavourites(user_id, track_id);
+        } catch (jakarta.persistence.NoResultException e) {
+            trackIdx = -1;
         }
+
         if (trackIdx == -1) {
-            return 0;
+            return false;
         }
 
         EntityTransaction transaction = entityManager.getTransaction();
@@ -309,15 +322,18 @@ public class UserService implements UserDetailsService {
 
         transaction.commit();
 
-        return 1;
+        return true;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        int userId = getUserIdWithLogin(username);
-        if (userId == -1){
+        int userId;
+        try {
+            userId = getUserIdWithLogin(username);
+        } catch (jakarta.persistence.NoResultException e) {
             throw new UsernameNotFoundException("No such login");
         }
+
         User user = getUserWithUserId(userId);
         return new org.springframework.security.core.userdetails.User(
                 user.getLogin(), user.getPassword(), new ArrayList<>());

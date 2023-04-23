@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TrackServiceTests {
     @Test
@@ -100,7 +101,7 @@ public class TrackServiceTests {
 
         ArrayList<Integer> array = new ArrayList<>();
         array.add(track_id);
-        ArrayList<Track> tracks = ts.getTracksWithTrackIds(array);
+        List<Track> tracks = ts.getTracksWithTrackIds(array);
         Assertions.assertEquals(1, tracks.size());
 
         Track track = tracks.get(0);
@@ -122,7 +123,7 @@ public class TrackServiceTests {
     @Test
     public void getAllTracksDummyTest() {
         TrackService ts = new TrackService();
-        ArrayList<Track> result = ts.getAllTracks();
+        List<Track> result = ts.getAllTracks();
         Assertions.assertNotNull(result);
         // Assertions.assertEquals(4, result.size());
     }
