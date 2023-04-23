@@ -6,6 +6,7 @@ import hse.elysium.entities.Track;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TrackService {
@@ -29,10 +30,10 @@ public class TrackService {
     /**
      * Given Set of track_id's, finds matching records with corresponding track_id's
      * in Track database table.
-     * @return ArrayList of Track objects, if at least one track_id from given Set was matched successfully,
+     * @return List of Track objects, if at least one track_id from given Set was matched successfully,
      * and null, if no matches were found.
      */
-    public ArrayList<Track> getTracksWithTrackIds(ArrayList<Integer> arrayOfTrackIds) {
+    public List<Track> getTracksWithTrackIds(List<Integer> arrayOfTrackIds) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<Track> array;
@@ -58,10 +59,10 @@ public class TrackService {
 
     /**
      * Finds tracks in Track database table.
-     * @return ArrayList of Track objects, if at least one track is present,
+     * @return List of Track objects, if at least one track is present,
      * and null, if no matches were found.
      */
-    public ArrayList<Track> getAllTracks() {
+    public List<Track> getAllTracks() {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<Track> array;
@@ -211,7 +212,8 @@ public class TrackService {
 
     /**
      * Given track_id, increments number of streams in matching record of Track database table.
-     * @return true, if streams of matching record was incremented successfully, and false, if matching record was not found.
+     * @return true, if streams of matching record was incremented successfully,
+     * and false, if matching record was not found.
      */
     public boolean incrementStreamsWithTrackId(int track_id) {
         EntityTransaction transaction = entityManager.getTransaction();
