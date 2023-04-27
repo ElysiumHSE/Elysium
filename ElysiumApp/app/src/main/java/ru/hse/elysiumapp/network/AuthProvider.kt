@@ -31,12 +31,16 @@ class AuthProvider {
 
             override fun onResponse(call: Call, response: Response) {
                 Log.println(Log.INFO, "login response message", response.message)
-                if (response.code == HttpURLConnection.HTTP_OK) {
-                    CredentialsHolder.token = response.message
-                } else if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                    loginError = LoginError.INCORRECT_DATA
-                } else {
-                    loginError = LoginError.UNKNOWN_RESPONSE
+                when (response.code) {
+                    HttpURLConnection.HTTP_OK -> {
+                        CredentialsHolder.token = response.message
+                    }
+                    HttpURLConnection.HTTP_UNAUTHORIZED -> {
+                        loginError = LoginError.INCORRECT_DATA
+                    }
+                    else -> {
+                        loginError = LoginError.UNKNOWN_RESPONSE
+                    }
                 }
                 callback.invoke(loginError)
             }
