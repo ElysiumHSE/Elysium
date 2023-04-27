@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
-//    id 'com.google.gms.google-services'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -89,6 +89,11 @@ dependencies {
     api "com.google.android.exoplayer:exoplayer-core:2.18.5"
     api "com.google.android.exoplayer:exoplayer-ui:2.18.5"
     api "com.google.android.exoplayer:extension-mediasession:2.18.5"
+
+    //Kotlin coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+
 }
 
 kapt {
