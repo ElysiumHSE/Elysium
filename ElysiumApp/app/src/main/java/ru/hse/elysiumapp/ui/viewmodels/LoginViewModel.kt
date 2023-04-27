@@ -39,27 +39,32 @@ class LoginViewModel @Inject constructor(
     val loginFormState: LiveData<LoginFormState> = _loginFormState
 
     fun login(username: String, password: String) {
-        val result = authProvider.login(username, password)
-        when (result) {
-            LoginError.OK -> {
-                _loginResult.value =
-                    LoginResult(success = LoggedInUserView(message = "Welcome, $username"))
-                Log.println(Log.INFO, "login", "logged in")
-            }
-            LoginError.INCORRECT_DATA -> {
-                _loginResult.value =
-                    LoginResult(error = LoginErrorOccurred(message = "Wrong login or password"))
-                Log.println(Log.INFO, "login", "Wrong login or password")
-            }
-            LoginError.CALL_FAILURE -> {
-                _loginResult.value =
-                    LoginResult(error = LoginErrorOccurred(message = "Something's wrong with network"))
-                Log.println(Log.INFO, "login", "Something's wrong with network")
-            }
-            LoginError.UNKNOWN_RESPONSE -> {
-                Log.println(Log.ERROR, "login", "Unknown response")
+        authProvider.login(username, password) { result ->
+            when (result) {
+                LoginError.OK -> {
+                    _loginResult.postValue(
+                        LoginResult(success = LoggedInUserView(message = "Welcome, $username"))
+                    )
+                    Log.println(Log.INFO, "login", "logged in")
+                }
+                LoginError.INCORRECT_DATA -> {
+                    _loginResult.postValue(
+                        LoginResult(error = LoginErrorOccurred(message = "Wrong login or password"))
+                    )
+                    Log.println(Log.INFO, "login", "Wrong login or password")
+                }
+                LoginError.CALL_FAILURE -> {
+                    _loginResult.postValue(
+                        LoginResult(error = LoginErrorOccurred(message = "Something's wrong with network"))
+                    )
+                    Log.println(Log.INFO, "login", "Something's wrong with network")
+                }
+                LoginError.UNKNOWN_RESPONSE -> {
+                    Log.println(Log.ERROR, "login", "Unknown response")
+                }
             }
         }
+
     }
 
     fun loginDataChanged(username: String, password: String) {
