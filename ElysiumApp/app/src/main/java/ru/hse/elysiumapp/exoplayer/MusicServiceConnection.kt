@@ -69,9 +69,9 @@ class MusicServiceConnection(
             _isConnected.postValue(
                 Event(
                     Resource.error(
-                "The connection was suspended",
-                false
-            ))
+                        "The connection was suspended",
+                        false
+                    ))
             )
         }
 
@@ -79,9 +79,9 @@ class MusicServiceConnection(
             _isConnected.postValue(
                 Event(
                     Resource.error(
-                "Couldn't connect to media browser",
-                false
-            ))
+                        "Couldn't connect to media browser",
+                        false
+                    ))
             )
         }
     }
