@@ -8,8 +8,8 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
@@ -29,7 +29,6 @@ private const val SERVICE_TAG = "MusicService"
 
 @AndroidEntryPoint
 class MusicService : MediaBrowserServiceCompat() {
-    private var count = 0
 
     @Inject
     lateinit var dataSourceFactory: DefaultDataSource.Factory
@@ -49,6 +48,8 @@ class MusicService : MediaBrowserServiceCompat() {
     private lateinit var mediaSessionConnector: MediaSessionConnector
 
     var isForegroundService = false
+
+    private val isReadyToPreparePlayer = MutableLiveData<Boolean>()
 
     private var curPlayingSong: MediaMetadataCompat? = null
 
@@ -105,6 +106,17 @@ class MusicService : MediaBrowserServiceCompat() {
         musicPlayerEventListener = MusicPlayerEventListener(this)
         exoPlayer.addListener(musicPlayerEventListener)
         musicNotificationManager.showNotification(exoPlayer)
+
+        isReadyToPreparePlayer.observeForever { isReady ->
+            if (isReady) {
+                preparePlayer(
+                    firebaseMusicSource.songs,
+                    firebaseMusicSource.songs[0],
+                    false
+                )
+                isPlayerInitialized = true
+            }
+        }
     }
 
     private inner class MusicQueueNavigator : TimelineQueueNavigator(mediaSession) {
@@ -119,17 +131,9 @@ class MusicService : MediaBrowserServiceCompat() {
         playNow: Boolean
     ) {
         val curSongIndex = if (curPlayingSong == null) 0 else songs.indexOf(itemToPlay)
-        while (true) {
-            try {
-                exoPlayer.prepare(firebaseMusicSource.asMediaSource(dataSourceFactory))
-                exoPlayer.seekTo(curSongIndex, 0L)
-                exoPlayer.playWhenReady = playNow
-                break
-            } catch (e: java.lang.IllegalStateException) {
-                count++
-            }
-        }
-        Log.d("Prepare exoplayer", count.toString())
+        exoPlayer.prepare(firebaseMusicSource.asMediaSource(dataSourceFactory))
+        exoPlayer.seekTo(curSongIndex, 0L)
+        exoPlayer.playWhenReady = playNow
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
@@ -163,12 +167,7 @@ class MusicService : MediaBrowserServiceCompat() {
                     if (isInitialized) {
                         result.sendResult(firebaseMusicSource.asMediaItems())
                         if (!isPlayerInitialized && firebaseMusicSource.songs.isNotEmpty()) {
-                            preparePlayer(
-                                firebaseMusicSource.songs,
-                                firebaseMusicSource.songs[0],
-                                false
-                            )
-                            isPlayerInitialized = true
+                            isReadyToPreparePlayer.postValue(true)
                         }
                     } else {
                         mediaSession.sendSessionEvent(NETWORK_ERROR, null)
