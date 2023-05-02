@@ -34,7 +34,8 @@
         android:layout_height="56dp"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/lightBackground"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vpSong"
