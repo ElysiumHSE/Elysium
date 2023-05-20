@@ -2,10 +2,9 @@ package hse.elysium.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
-@NamedQuery(name = "getTracksWithTrackIds",
-            query = "SELECT trackId, name, author, genre, mood, musicUrl, coverUrl, streams " +
-                    "FROM Track where trackId IN :track_id_set")
 public class Track {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -32,6 +31,9 @@ public class Track {
     @Basic
     @Column(name = "streams")
     private Integer streams;
+    @Basic
+    @Column(name = "comments")
+    private String comments;
 
     public int getTrackId() {
         return trackId;
@@ -97,35 +99,24 @@ public class Track {
         this.streams = streams;
     }
 
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        Track tracks = (Track) o;
-
-        if (trackId != tracks.trackId) return false;
-        if (name != null ? !name.equals(tracks.name) : tracks.name != null) return false;
-        if (author != null ? !author.equals(tracks.author) : tracks.author != null) return false;
-        if (genre != null ? !genre.equals(tracks.genre) : tracks.genre != null) return false;
-        if (mood != null ? !mood.equals(tracks.mood) : tracks.mood != null) return false;
-        if (musicUrl != null ? !musicUrl.equals(tracks.musicUrl) : tracks.musicUrl != null) return false;
-        if (coverUrl != null ? !coverUrl.equals(tracks.coverUrl) : tracks.coverUrl != null) return false;
-        if (streams != null ? !streams.equals(tracks.streams) : tracks.streams != null) return false;
-
-        return true;
+        Track track = (Track) o;
+        return trackId == track.trackId && Objects.equals(name, track.name) && Objects.equals(author, track.author) && Objects.equals(genre, track.genre) && Objects.equals(mood, track.mood) && Objects.equals(musicUrl, track.musicUrl) && Objects.equals(coverUrl, track.coverUrl) && Objects.equals(streams, track.streams) && Objects.equals(comments, track.comments);
     }
 
     @Override
     public int hashCode() {
-        int result = trackId;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (author != null ? author.hashCode() : 0);
-        result = 31 * result + (genre != null ? genre.hashCode() : 0);
-        result = 31 * result + (mood != null ? mood.hashCode() : 0);
-        result = 31 * result + (musicUrl != null ? musicUrl.hashCode() : 0);
-        result = 31 * result + (coverUrl != null ? coverUrl.hashCode() : 0);
-        result = 31 * result + (streams != null ? streams.hashCode() : 0);
-        return result;
+        return Objects.hash(trackId, name, author, genre, mood, musicUrl, coverUrl, streams, comments);
     }
 }

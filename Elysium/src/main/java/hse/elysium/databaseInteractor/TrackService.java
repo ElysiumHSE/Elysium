@@ -1,5 +1,6 @@
 package hse.elysium.databaseInteractor;
 
+import hse.elysium.entities.User;
 import jakarta.persistence.*;
 
 import hse.elysium.entities.Track;
@@ -28,9 +29,9 @@ public class TrackService {
                     ("SELECT * FROM Track", Track.class);
 
     /**
-     * Given Set of track_id's, finds matching records with corresponding track_id's
+     * Given List of track_id's, finds matching records with corresponding track_id's
      * in Track database table.
-     * @return List of Track objects, if at least one track_id from given Set was matched successfully,
+     * @return List of Track objects, if at least one track_id from given List was matched successfully,
      * and null, if no matches were found.
      */
     public List<Track> getTracksWithTrackIds(List<Integer> arrayOfTrackIds) {
@@ -113,6 +114,28 @@ public class TrackService {
     }
 
     /**
+     * Given a track_id, finds comments of corresponding track in a matching record of Track database table.
+     * @return List of Integers representing comment ids, if matching record was found, and null otherwise.
+     */
+    public List<Integer> getTrackCommentsWithTrackId(int track_id) {
+        Track track = getTrackWithTrackId(track_id);
+        if (track == null) {
+            return null;
+        } else {
+            String comments = track.getComments();
+            if (comments == null || comments.equals("")) {
+                return null;
+            }
+            String[] commentIds = comments.split("\\|");
+            ArrayList<Integer> arrayOfCommentIds = new ArrayList<>();
+            for (String str : commentIds) {
+                arrayOfCommentIds.add(Integer.parseInt(str));
+            }
+            return arrayOfCommentIds;
+        }
+    }
+
+    /**
      * Given name, author, genre, mood, music_url and cover_url, adds a new record with given parameters
      * to Track database table. Value of streams of a new track record is set 0.
      * @return track_id of new record
@@ -182,6 +205,7 @@ public class TrackService {
         track.setMusicUrl(updated_track.getMusicUrl());
         track.setCoverUrl(updated_track.getCoverUrl());
         track.setStreams(updated_track.getStreams());
+        track.setComments(updated_track.getComments());
 
         transaction.commit();
 
@@ -208,6 +232,78 @@ public class TrackService {
         transaction.commit();
 
         return track;
+    }
+
+    /**
+     * Given track_id and comment_id, finds comment with corresponding comment_id in track's comments
+     * in a corresponding record in Track database table.
+     * @return index of comments' string, if comment with corresponding comment_id was found.
+     * @throws jakarta.persistence.NoResultException, if comment was not found.
+     * @throws jakarta.persistence.PersistenceException, if track was not found.
+     */
+    public int findCommentInTracksComments(int track_id, int comment_id) throws NoResultException, PersistenceException {
+        Track track = getTrackWithTrackId(track_id);
+        if (track == null) {
+            throw new jakarta.persistence.PersistenceException("track was not found");
+        }
+
+        String currentComments = track.getComments();
+
+        if (currentComments == null) {
+            throw new jakarta.persistence.NoResultException("comment was not found");
+        } else {
+            int commentIdx = currentComments.indexOf("|" + comment_id + "|");
+            if (commentIdx == -1) {
+                commentIdx = currentComments.indexOf(comment_id + "|");
+                if (commentIdx != 0) {
+                    throw new jakarta.persistence.NoResultException("comment was not found");
+                } else {
+                    return commentIdx;
+                }
+            } else {
+                return commentIdx;
+            }
+        }
+    }
+
+    /**
+     * Given track_id and comment_id, adds comment with corresponding comment_id to track's comments
+     * in a corresponding record in Track database table.
+     * @return true, if comment with corresponding comment_id was added to comments successfully,
+     * and false, if comment is already in comments.
+     * @throws jakarta.persistence.PersistenceException, if track_id is invalid.
+     */
+    public boolean addCommentToCommentsWithTrackId(int track_id, int comment_id) throws PersistenceException {
+        int commentIdx;
+        try {
+            commentIdx = findCommentInTracksComments(track_id, comment_id);
+        } catch (jakarta.persistence.NoResultException e) {
+            commentIdx = -1;
+        }
+
+        if (commentIdx >= 0) {
+            return false;
+        }
+
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        transaction.begin();
+
+        Track track = entityManager.getReference(Track.class, track_id);
+        String currentComments = track.getComments();
+
+        String newComments;
+        if (currentComments == null) {
+            newComments = comment_id + "|";
+        } else {
+            newComments = currentComments + comment_id + "|";
+        }
+
+        track.setComments(newComments);
+
+        transaction.commit();
+
+        return true;
     }
 
     /**
