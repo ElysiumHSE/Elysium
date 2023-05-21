@@ -1,5 +1,6 @@
 package ru.hse.elysiumapp.data.remote
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import ru.hse.elysiumapp.data.entities.Song
@@ -14,6 +15,7 @@ class MusicDatabase {
         return try {
             songCollection.get().await().toObjects(Song::class.java)
         } catch(e : Exception) {
+            Log.d("Music Database", "Couldn't get songs metadata from database: " + e.message)
             emptyList()
         }
     }
