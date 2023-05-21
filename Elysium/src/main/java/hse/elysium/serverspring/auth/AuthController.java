@@ -1,5 +1,6 @@
 package hse.elysium.serverspring.auth;
 
+import hse.elysium.serverspring.forms.UserLoginPasswordForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,6 @@ public class AuthController {
         }
     }
 
-    /*
-        a.k.a. authentication
-     */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserLoginPasswordForm userRegisterForm) {
         return ResponseEntity.ok(authenticationService.login(userRegisterForm.getLogin(), userRegisterForm.getPassword()));
