@@ -82,7 +82,7 @@ public class CommentService {
      * Given user_id and content, adds a new record with given parameters to Comment database table.
      * @return comment_id of new record
      */
-    public int addNewCommentWithAllParams(int user_id, String content) {
+    public synchronized int addNewCommentWithAllParams(int user_id, String content) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         try {
@@ -107,7 +107,7 @@ public class CommentService {
     /**
      * Close entity manager and entity manager factory when finished working with class.
      */
-    public void closeHandler() {
+    public synchronized void closeHandler() {
         entityManager.close();
         entityManagerFactory.close();
     }

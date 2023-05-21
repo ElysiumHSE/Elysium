@@ -5,6 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.security.web.header.Header;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.*;
 
@@ -29,12 +30,12 @@ public class JwtService {
     JwtService() {
         String SECRET_KEY1;
         Properties prop = new Properties();
-        InputStream input = null;
+        InputStream input;
         try {
             input = new FileInputStream("gradle.properties");
             prop.load(input);
             SECRET_KEY1 = prop.getProperty("JWT_SECRET_KEY");
-        } catch (IOException ex){
+        } catch (IOException ex) {
             SECRET_KEY1 = "";
             log.error("not found gradle.properties");
         }
@@ -46,6 +47,10 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public Integer extractUserId(String token) {
+        return extractClaim(token, (claims -> claims.get("UserId", Integer.class)));
+    }
+
     public String extractIssuer(String token) {
         return extractClaim(token, Claims::getIssuer);
     }
@@ -55,17 +60,18 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(User user) {
-        return generateToken(new HashMap<>(), user);
+    public String generateToken(User user, int userId) {
+        return generateToken(new HashMap<>(), user, userId);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, User user) {
+    public String generateToken(Map<String, Object> extraClaims, User user, int userId) {
+        extraClaims.put("UserId", userId);
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(user.getLogin())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setIssuer("Elysium")
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // Token lives for 1 week
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

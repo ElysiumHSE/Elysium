@@ -2,7 +2,10 @@ package hse.elysium.serverspring.auth;
 
 import hse.elysium.databaseInteractor.TokenService;
 import hse.elysium.entities.Token;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,12 +62,13 @@ public final class AuthenticationFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(userDetails, null, null);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    request.setAttribute("UserId", jwtService.extractUserId(token));
                     log.info("Authentication set");
                 }
             }
-        } catch (MalformedJwtException e) {
+        } catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | SignatureException e) {
             log.info("Incorrect jwt token");
-        }
+            }
         filterChain.doFilter(request, response);
     }
 

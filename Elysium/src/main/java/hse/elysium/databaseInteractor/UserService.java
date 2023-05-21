@@ -98,7 +98,7 @@ public class UserService implements UserDetailsService {
      * if user_id did not match any of User database table records or
      * given password String object is null.
      */
-    public boolean changePasswordWithUserIdPassword(int user_id, String password) {
+    public synchronized boolean changePasswordWithUserIdPassword(int user_id, String password) {
         if (password == null) {
             return false;
         }
@@ -123,7 +123,7 @@ public class UserService implements UserDetailsService {
      * Given a user_id, deletes a matching record in User database table.
      * @return Object of class User representing the deleted record, if matching record was found, and null otherwise.
      */
-    public User deleteUserWithUserId(int user_id) {
+    public synchronized User deleteUserWithUserId(int user_id) {
         User user = getUserWithUserId(user_id);
 
         if (user == null) {
@@ -172,7 +172,7 @@ public class UserService implements UserDetailsService {
      * @return user_id of new user, if adding new record to User database table was successful.
      * @throws jakarta.persistence.PersistenceException, if user with matching login already exists.
      */
-    public int addNewUserWithAllParams(String login, String password, String favourites)
+    public synchronized int addNewUserWithAllParams(String login, String password, String favourites)
             throws PersistenceException {
 
         int userId;
@@ -209,7 +209,7 @@ public class UserService implements UserDetailsService {
      * @return user_id of new user, if adding new record to User database table was successful.
      * @throws jakarta.persistence.PersistenceException, if user with matching login already exists.
      */
-    public int addNewUserWithLoginPassword(String login, String password) throws PersistenceException {
+    public synchronized int addNewUserWithLoginPassword(String login, String password) throws PersistenceException {
         return addNewUserWithAllParams(login, password, null);
     }
 
@@ -252,7 +252,7 @@ public class UserService implements UserDetailsService {
      * and false, if track is already in favourites.
      * @throws jakarta.persistence.PersistenceException, if user_id is invalid.
      */
-    public boolean addTrackToFavouritesWithUserId(int user_id, int track_id) throws PersistenceException {
+    public synchronized boolean addTrackToFavouritesWithUserId(int user_id, int track_id) throws PersistenceException {
         int trackIdx;
         try {
             trackIdx = findTrackInUserFavourites(user_id, track_id);
@@ -292,7 +292,7 @@ public class UserService implements UserDetailsService {
      * and false, if track was not found in favourites.
      * @throws jakarta.persistence.PersistenceException, if user_id is invalid.
      */
-    public boolean deleteTrackFromFavouritesWithUserId(int user_id, int track_id) throws PersistenceException {
+    public synchronized boolean deleteTrackFromFavouritesWithUserId(int user_id, int track_id) throws PersistenceException {
         int trackIdx;
         try {
             trackIdx = findTrackInUserFavourites(user_id, track_id);
@@ -342,7 +342,7 @@ public class UserService implements UserDetailsService {
     /**
      * Close entity manager and entity manager factory when finished working with class.
      */
-    public void closeHandler() {
+    public synchronized void closeHandler() {
         entityManager.close();
         entityManagerFactory.close();
     }

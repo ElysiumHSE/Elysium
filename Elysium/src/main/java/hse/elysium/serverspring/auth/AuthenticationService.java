@@ -3,6 +3,7 @@ package hse.elysium.serverspring.auth;
 import hse.elysium.databaseInteractor.TokenService;
 import hse.elysium.databaseInteractor.UserService;
 import hse.elysium.entities.User;
+import hse.elysium.serverspring.forms.UserLoginPasswordForm;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
@@ -53,10 +54,8 @@ public class AuthenticationService {
         try {
             int userId = userService.getUserIdWithLogin(username);
             User user = userService.getUserWithUserId(userId);
-            String token = jwtService.generateToken(user);
-
+            String token = jwtService.generateToken(user, userId);
             tokenService.addNewTokenWithTokenValueUserId(token, userId);
-
             log.info(token);
             return token;
         } catch (NoResultException e) {

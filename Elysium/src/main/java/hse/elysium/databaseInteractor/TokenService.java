@@ -85,7 +85,7 @@ public class TokenService {
      * @return token_id of new token, if adding new record to Token database table was successful.
      * @throws jakarta.persistence.PersistenceException, if token with corresponding token_value already exists.
      */
-    public int addNewTokenWithAllParams(String token_value, boolean revoked, boolean expired, int user_id)
+    public synchronized int addNewTokenWithAllParams(String token_value, boolean revoked, boolean expired, int user_id)
             throws PersistenceException {
 
         int tokenId;
@@ -124,7 +124,7 @@ public class TokenService {
      * @return token_id of new token, if adding new record to Token database table was successful,
      * @throws jakarta.persistence.PersistenceException, if token with corresponding token_value already exists.
      */
-    public int addNewTokenWithTokenValueUserId(String token_value, int user_id) throws PersistenceException {
+    public synchronized int addNewTokenWithTokenValueUserId(String token_value, int user_id) throws PersistenceException {
         return addNewTokenWithAllParams(token_value, false, false, user_id);
     }
 
@@ -133,7 +133,7 @@ public class TokenService {
      * @return true, if revoked flag was set successfully, and false, if revoked flag was already set true.
      * @throws jakarta.persistence.NoResultException, if corresponding record in Token database table was not found.
      */
-    public boolean setRevokedWithTokenValue(String token_value) throws NoResultException {
+    public synchronized boolean setRevokedWithTokenValue(String token_value) throws NoResultException {
         int tokenId = getTokenIdWithTokenValue(token_value);
 
         boolean result;
@@ -158,7 +158,7 @@ public class TokenService {
      * @return true, if expired flag was set successfully, and false, if expired flag was already set true.
      * @throws jakarta.persistence.NoResultException, if corresponding record in Token database table was not found.
      */
-    public boolean setExpiredWithTokenValue(String token_value) throws NoResultException {
+    public synchronized boolean setExpiredWithTokenValue(String token_value) throws NoResultException {
         int tokenId = getTokenIdWithTokenValue(token_value);
 
         boolean result;
@@ -182,7 +182,7 @@ public class TokenService {
      * Given user_id, sets revoked flags in all corresponding records in Token database table.
      * @throws jakarta.persistence.NoResultException, if no corresponding records in Token database table were found.
      */
-    public void setRevokedForUserChangedPasswordWithUserId(int user_id) throws NoResultException {
+    public synchronized void setRevokedForUserChangedPasswordWithUserId(int user_id) throws NoResultException {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<String> array;
@@ -211,7 +211,7 @@ public class TokenService {
      * @return Object of class Token representing the deleted token, if matching record was found.
      * @throws jakarta.persistence.NoResultException, if matching record was not found.
      */
-    public Token deleteTokenWithTokenValue(String token_value) throws NoResultException {
+    public synchronized Token deleteTokenWithTokenValue(String token_value) throws NoResultException {
         Token token = getTokenWithTokenValue(token_value);
 
         EntityTransaction transaction = entityManager.getTransaction();
@@ -228,7 +228,7 @@ public class TokenService {
     /**
      * Deletes records with revoked or expired flags set in Token database table.
      */
-    public void deleteRecordsWithRevokedOrExpired() {
+    public synchronized void deleteRecordsWithRevokedOrExpired() {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<String> array;
@@ -254,7 +254,7 @@ public class TokenService {
     /**
      * Close entity manager and entity manager factory when finished working with class.
      */
-    public void closeHandler() {
+    public synchronized void closeHandler() {
         entityManager.close();
         entityManagerFactory.close();
     }

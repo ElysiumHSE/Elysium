@@ -1,7 +1,8 @@
 package hse.elysium.serverspring.controller;
 
 import hse.elysium.serverspring.auth.AuthenticationService;
-import hse.elysium.serverspring.auth.UserLoginPasswordForm;
+import hse.elysium.serverspring.forms.UserLoginPasswordForm;
+import hse.elysium.serverspring.forms.PasswordForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
