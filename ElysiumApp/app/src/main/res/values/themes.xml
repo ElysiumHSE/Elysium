@@ -1,16 +1,40 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.ElysiumApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+        <item name="android:statusBarColor">@color/darkBackground</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textViewStyle">@style/PoppinsTextStyle</item>
+        <item name="materialButtonStyle">@style/ButtonStyle</item>
+        <item name="textInputStyle">@style/InputTextStyle</item>
+        <item name="editTextStyle">@style/EditTextStyle</item>
+    </style>
+
+    <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/secondaryText</item>
+    </style>
+    
+    <style name="InputTextStyle" parent="Widget.Design.TextInputLayout">
+        <item name="backgroundTint">@android:color/white</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="background">@color/colorAccent</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:backgroundTint">@color/colorAccent</item>
+    </style>
+
+    <style name="PlayButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">100dp</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="cornerRadius">25dp</item>
+    </style>
+
+    <style name="PoppinsTextStyle" parent="android:Widget.TextView">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>

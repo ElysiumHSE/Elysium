@@ -1,17 +1,21 @@
 package ru.hse.elysiumapp.ui.activities
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
+import ru.hse.elysiumapp.R
 import dagger.hilt.android.AndroidEntryPoint
 import ru.hse.elysiumapp.databinding.ActivityRegistrationBinding
 import ru.hse.elysiumapp.ui.viewmodels.RegisteredUser
 import ru.hse.elysiumapp.ui.viewmodels.RegistrationErrorOccurred
 import ru.hse.elysiumapp.ui.viewmodels.RegistrationViewModel
+
 @AndroidEntryPoint
 class RegistrationActivity : AppCompatActivity() {
 
@@ -30,6 +34,8 @@ class RegistrationActivity : AppCompatActivity() {
         val register = binding.register
         val loading = binding.loading
 
+        register.setBackgroundColor(resources.getColor(R.color.inactiveBlue))
+
         registrationViewModel.registrationResult.observe(this@RegistrationActivity, Observer {
             val registrationResult = it ?: return@Observer
 
@@ -47,9 +53,15 @@ class RegistrationActivity : AppCompatActivity() {
             val registrationState = it ?: return@Observer
 
             register.isEnabled = registrationState.isDataValid
+            if (register.isEnabled) {
+                register.setBackgroundColor(resources.getColor(R.color.colorAccent))
+            } else {
+                register.setBackgroundColor(resources.getColor(R.color.inactiveBlue))
+            }
         })
 
         register.setOnClickListener {
+            closeKeyboard()
             loading.visibility = View.VISIBLE
             registrationViewModel.register(username.text.toString(), password.text.toString())
         }
@@ -77,5 +89,13 @@ class RegistrationActivity : AppCompatActivity() {
 
     private fun provideRegistrationSuccess(success: RegisteredUser) {
         Toast.makeText(applicationContext, success.message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun closeKeyboard() {
+        val view = this@RegistrationActivity.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 }
