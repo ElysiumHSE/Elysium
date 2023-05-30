@@ -1,7 +1,9 @@
 package ru.hse.elysiumapp.adapters
 
+import android.util.Log
 import androidx.recyclerview.widget.AsyncListDiffer
 import com.bumptech.glide.RequestManager
+import com.google.gson.Gson
 import ru.hse.elysiumapp.R
 import ru.hse.elysiumapp.databinding.ListItemBinding
 import javax.inject.Inject
@@ -18,7 +20,6 @@ class SongAdapter @Inject constructor(
             tvPrimary.text = song.name
             tvSecondary.text = song.author
             glide.load(song.coverUrl).into(ivItemImage)
-
             root.setOnClickListener {
                 onItemClickListener?.let { click ->
                     click(song)
