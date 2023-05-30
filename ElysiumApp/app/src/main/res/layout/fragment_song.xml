@@ -15,11 +15,26 @@
         android:text="@string/song_name_placeholder"
         android:gravity="center"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/ivSongImage"
+        app:layout_constraintBottom_toTopOf="@+id/tvSongAuthor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvSongAuthor"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/song_author_placeholder"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/secondaryText"
+        app:layout_constraintBottom_toTopOf="@+id/ivSongImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSongName" />
 
     <ImageView
         android:id="@+id/ivSongImage"
@@ -44,6 +59,7 @@
         app:layout_constraintTop_toTopOf="@+id/seekBar" />
 
     <SeekBar
+        android:progressBackgroundTint="@color/white"
         android:id="@+id/seekBar"
         android:layout_width="0dp"
         android:layout_height="18dp"
@@ -67,7 +83,7 @@
         android:id="@+id/ivPlayPauseDetail"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:background="@drawable/circle_drawable"
         android:src="@drawable/ic_play"
         app:layout_constraintEnd_toEndOf="parent"
@@ -95,18 +111,28 @@
         app:layout_constraintStart_toEndOf="@+id/ivPlayPauseDetail"
         app:layout_constraintTop_toTopOf="@+id/ivPlayPauseDetail" />
 
+    <ImageView
+        android:id="@+id/ivComment"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/ic_comment"
+        app:layout_constraintBottom_toBottomOf="@id/ivPlayPauseDetail"
+        app:layout_constraintStart_toEndOf="@+id/ivSkip"
+        app:layout_constraintTop_toTopOf="@id/ivSkip" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.6" />
+        app:layout_constraintGuide_percent="0.60" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.7" />
+        app:layout_constraintGuide_percent="0.65" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
