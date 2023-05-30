@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                         result.data?.let { songs ->
                             swipeSongAdapter.songs = songs
                             if (songs.isNotEmpty()) {
-                                glide.load((curPlayingSong ?: songs[0]).imageUrl)
+                                glide.load((curPlayingSong ?: songs[0]).coverUrl)
                                     .into(binding.ivCurSongImage)
                             }
                             switchViewPagerToCurrentSong(curPlayingSong ?: return@observe)
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
             if (it == null) return@observe
 
             curPlayingSong = it.toSong()
-            glide.load(curPlayingSong?.imageUrl).into(binding.ivCurSongImage)
+            glide.load(curPlayingSong?.coverUrl).into(binding.ivCurSongImage)
             switchViewPagerToCurrentSong(curPlayingSong ?: return@observe)
         }
         mainViewModel.playbackState.observe(this) {
