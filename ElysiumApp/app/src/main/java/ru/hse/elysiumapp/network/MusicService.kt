@@ -44,6 +44,9 @@ object MusicService {
                         val typeToken = object : TypeToken<List<Song>>() {}.type
                         result = Gson().fromJson(response.body!!.string(), typeToken)
                         Log.println(Log.INFO, "Got tracks", result.size.toString())
+                        for (song in result) {
+                            Log.println(Log.INFO, "track", Gson().toJson(song))
+                        }
                     }
                 }
                 countDownLatch.countDown()
