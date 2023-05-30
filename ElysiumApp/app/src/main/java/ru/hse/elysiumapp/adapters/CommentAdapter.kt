@@ -9,6 +9,7 @@ import ru.hse.elysiumapp.data.entities.Comment
 import ru.hse.elysiumapp.databinding.CommentItemBinding
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
@@ -33,10 +34,11 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val binding = CommentItemBinding.bind(holder.itemView)
         val comment = comments[position]
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
         binding.apply {
             tvNickname.text = comment.nickname
-            tvDatetime.text = SimpleDateFormat("yyyy-MM-dd   HH:mm").format(
+            tvDatetime.text = dateFormat.format(
                 Date(
                     comment.publicationDatetime?.time ?: 0
                 )

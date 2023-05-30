@@ -11,7 +11,9 @@ import ru.hse.elysiumapp.databinding.FragmentCommentsBinding
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CommentsFragment : BottomSheetDialogFragment(R.layout.fragment_comments) {
+class CommentsFragment(
+    private val trackId: String
+) : BottomSheetDialogFragment(R.layout.fragment_comments) {
     private lateinit var binding: FragmentCommentsBinding
 
     @Inject
