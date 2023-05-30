@@ -18,4 +18,7 @@
     <string name="title_placeholder">Title</string>
     <string name="playlist_title">Playlist Title</string>
     <string name="_100_songs">100 Songs</string>
+    <string name="nickname">Nickname</string>
+    <string name="datetime">18-18-2018 18:00</string>
+    <string name="comment">Comment</string>
 </resources>

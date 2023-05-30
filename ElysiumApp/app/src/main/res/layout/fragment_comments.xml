@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkBackground"
+    tools:context=".ui.activities.MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+        <ProgressBar
+            android:id="@+id/allCommentsProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvAllComments"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/evInputComment"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:autofillHints="@string/comment"
+            android:hint="@string/comment"
+            android:inputType="text"
+            android:selectAllOnFocus="true"
+            android:background="@color/lightBackground"
+            android:padding="@dimen/edit_text_padding"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ivSendComment"
+            app:layout_constraintBottom_toBottomOf="parent" />
+            
+        <ImageView
+            android:padding="8dp"
+            android:id="@+id/ivSendComment"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@color/lightBackground"
+            app:layout_constraintStart_toEndOf="@id/evInputComment"
+            app:layout_constraintBottom_toBottomOf="@id/evInputComment"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/ic_send"/>
+
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    
+</FrameLayout>
