@@ -46,6 +46,7 @@ object MusicService {
                         Log.println(Log.INFO, "Got tracks", result.size.toString())
                     }
                 }
+                countDownLatch.countDown()
             }
         })
         countDownLatch.await()

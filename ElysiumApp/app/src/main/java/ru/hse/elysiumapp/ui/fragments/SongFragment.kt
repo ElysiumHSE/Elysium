@@ -78,9 +78,9 @@ class SongFragment : Fragment(R.layout.fragment_song) {
     }
 
     private fun updateTitleAndSongImage(song: Song) {
-        val title = "${song.title} - ${song.author}"
+        val title = "${song.name} - ${song.author}"
         binding.tvSongName.text = title
-        glide.load(song.imageUrl).into(binding.ivSongImage)
+        glide.load(song.coverUrl).into(binding.ivSongImage)
     }
 
     private fun subscribeToObservers() {

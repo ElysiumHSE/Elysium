@@ -33,7 +33,7 @@ class AuthProvider {
                 Log.println(Log.INFO, "login response message", response.message)
                 when (response.code) {
                     HttpURLConnection.HTTP_OK -> {
-                        CredentialsHolder.token = response.message
+                        CredentialsHolder.token = response.body!!.string()
                     }
                     HttpURLConnection.HTTP_UNAUTHORIZED -> {
                         loginError = LoginError.INCORRECT_DATA

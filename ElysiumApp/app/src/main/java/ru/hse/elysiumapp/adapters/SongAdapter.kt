@@ -15,9 +15,9 @@ class SongAdapter @Inject constructor(
         val binding = ListItemBinding.bind(holder.itemView)
         val song = songs[position]
         binding.apply {
-            tvPrimary.text = song.title
+            tvPrimary.text = song.name
             tvSecondary.text = song.author
-            glide.load(song.imageUrl).into(ivItemImage)
+            glide.load(song.coverUrl).into(ivItemImage)
 
             root.setOnClickListener {
                 onItemClickListener?.let { click ->
