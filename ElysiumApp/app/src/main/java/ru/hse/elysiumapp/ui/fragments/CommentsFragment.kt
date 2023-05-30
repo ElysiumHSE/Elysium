@@ -2,8 +2,8 @@ package ru.hse.elysiumapp.ui.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import ru.hse.elysiumapp.R
 import ru.hse.elysiumapp.adapters.CommentAdapter
@@ -11,7 +11,7 @@ import ru.hse.elysiumapp.databinding.FragmentCommentsBinding
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CommentsFragment : Fragment(R.layout.fragment_comments) {
+class CommentsFragment : BottomSheetDialogFragment(R.layout.fragment_comments) {
     private lateinit var binding: FragmentCommentsBinding
 
     @Inject
@@ -21,10 +21,26 @@ class CommentsFragment : Fragment(R.layout.fragment_comments) {
         binding = FragmentCommentsBinding.bind(view)
         super.onViewCreated(binding.root, savedInstanceState)
         setupRecyclerView()
+
+        if (commentAdapter.comments.isEmpty()) {
+            hideComments()
+        } else {
+            showComments()
+        }
     }
 
     private fun setupRecyclerView() = binding.rvAllComments.apply {
         adapter = commentAdapter
         layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun showComments() {
+        binding.rvAllComments.visibility = View.VISIBLE
+        binding.tvNoComments.visibility = View.GONE
+    }
+
+    private fun hideComments() {
+        binding.rvAllComments.visibility = View.GONE
+        binding.tvNoComments.visibility = View.VISIBLE
     }
 }

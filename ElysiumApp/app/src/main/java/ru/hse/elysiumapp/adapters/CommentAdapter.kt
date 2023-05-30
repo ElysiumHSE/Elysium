@@ -4,12 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import ru.hse.elysiumapp.R
 import ru.hse.elysiumapp.data.entities.Comment
 import ru.hse.elysiumapp.databinding.CommentItemBinding
+import java.text.SimpleDateFormat
+import java.util.Date
 
-class CommentAdapter(
-    private val layoutId: Int
-) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
+class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
     class CommentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -18,7 +19,7 @@ class CommentAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
         return CommentViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                layoutId,
+                R.layout.comment_item,
                 parent,
                 false
             )
@@ -32,9 +33,14 @@ class CommentAdapter(
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
         val binding = CommentItemBinding.bind(holder.itemView)
         val comment = comments[position]
+
         binding.apply {
             tvNickname.text = comment.nickname
-            tvDatetime.text = comment.publicationDatetime.toString()
+            tvDatetime.text = SimpleDateFormat("yyyy-MM-dd   HH:mm").format(
+                Date(
+                    comment.publicationDatetime?.time ?: 0
+                )
+            )
             tvComment.text = comment.text
         }
     }

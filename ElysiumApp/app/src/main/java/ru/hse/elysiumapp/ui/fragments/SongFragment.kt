@@ -75,6 +75,11 @@ class SongFragment : Fragment(R.layout.fragment_song) {
         binding.ivSkip.setOnClickListener {
             mainViewModel.skipToNextSong()
         }
+
+        binding.ivComment.setOnClickListener {
+            val sheet = CommentsFragment()
+            fragmentManager?.let { it1 -> sheet.show(it1, sheet.tag) }
+        }
     }
 
     private fun updateTitleAndSongImage(song: Song) {
