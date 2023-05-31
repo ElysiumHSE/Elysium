@@ -19,8 +19,7 @@ import ru.hse.elysiumapp.data.remote.CommentDatabase
 import javax.inject.Inject
 
 class FirebaseMusicSource @Inject constructor(
-    private val musicDatabase: MusicDatabase,
-    private val commentDatabase: CommentDatabase
+    private val musicDatabase: MusicDatabase
 ) {
     var songs = emptyList<MediaMetadataCompat>()
 
