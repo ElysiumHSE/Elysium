@@ -5,17 +5,17 @@ import com.google.gson.Gson
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import ru.hse.elysiumapp.forms.LoginPasswordRequestForm
 import ru.hse.elysiumapp.other.Constants
 import java.io.IOException
 import java.net.HttpURLConnection
-import java.util.concurrent.TimeUnit
 
 
 class AuthProvider {
     private val client = CredentialsHolder.client
 
     fun login(username: String, password: String, callback: (LoginError) -> Unit) {
-        val jsonString = Gson().toJson(LoginPasswordForm(username, password))
+        val jsonString = Gson().toJson(LoginPasswordRequestForm(username, password))
         Log.println(Log.INFO, "login", jsonString)
         val body = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request.Builder().url(Constants.BASE_URL + "auth/login").post(body).build()
@@ -27,7 +27,6 @@ class AuthProvider {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                Log.println(Log.INFO, "login response message", response.message)
                 when (response.code) {
                     HttpURLConnection.HTTP_OK -> {
                         CredentialsHolder.token = response.body!!.string()
@@ -45,7 +44,7 @@ class AuthProvider {
     }
 
     fun register(username: String, password: String, callback: (RegisterError) -> Unit) {
-        val jsonString = Gson().toJson(LoginPasswordForm(username, password))
+        val jsonString = Gson().toJson(LoginPasswordRequestForm(username, password))
         Log.println(Log.INFO, "register", jsonString)
         val body = jsonString.toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request.Builder().url(Constants.BASE_URL + "auth/register").post(body).build()
