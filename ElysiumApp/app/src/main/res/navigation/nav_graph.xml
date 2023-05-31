@@ -12,6 +12,10 @@
         android:id="@+id/songFragment"
         android:name="ru.hse.elysiumapp.ui.fragments.SongFragment"
         android:label="SongFragment" />
+    <fragment
+        android:id="@+id/commentsFragment"
+        android:name="ru.hse.elysiumapp.ui.fragments.CommentsFragment"
+        android:label="CommentsFragment" />
 
     <action android:id="@+id/globalActionToSongFragment"
         app:destination="@+id/songFragment" />

@@ -75,12 +75,21 @@ class SongFragment : Fragment(R.layout.fragment_song) {
         binding.ivSkip.setOnClickListener {
             mainViewModel.skipToNextSong()
         }
+
+        binding.ivComment.isEnabled = false
     }
 
-    private fun updateTitleAndSongImage(song: Song) {
-        val title = "${song.title} - ${song.author}"
-        binding.tvSongName.text = title
+    private fun updateSongData(song: Song) {
+        binding.tvSongName.text = song.title
+        binding.tvSongAuthor.text = song.author
         glide.load(song.imageUrl).into(binding.ivSongImage)
+        binding.ivComment.apply {
+            isEnabled = true
+            setOnClickListener {
+                val sheet = CommentsFragment(song.mediaId)
+                fragmentManager?.let { sheet.show(it, sheet.tag) }
+            }
+        }
     }
 
     private fun subscribeToObservers() {
@@ -91,7 +100,7 @@ class SongFragment : Fragment(R.layout.fragment_song) {
                         result.data?.let {songs ->
                             if (curPlayingSong == null && songs.isNotEmpty()) {
                                 curPlayingSong = songs[0]
-                                updateTitleAndSongImage(songs[0])
+                                updateSongData(songs[0])
                             }
                         }
                     }
@@ -102,7 +111,7 @@ class SongFragment : Fragment(R.layout.fragment_song) {
         mainViewModel.curPlayingSong.observe(viewLifecycleOwner) {
             if (it == null) return@observe
             curPlayingSong = it.toSong()
-            updateTitleAndSongImage(curPlayingSong!!)
+            updateSongData(curPlayingSong!!)
         }
         mainViewModel.playbackState.observe(viewLifecycleOwner) {
             playbackState = it
