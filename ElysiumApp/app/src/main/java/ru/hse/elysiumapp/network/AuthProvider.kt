@@ -12,10 +12,7 @@ import java.util.concurrent.TimeUnit
 
 
 class AuthProvider {
-    private val client =
-        OkHttpClient.Builder().pingInterval(1, TimeUnit.SECONDS).connectTimeout(5, TimeUnit.SECONDS)
-            .writeTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS)
-            .retryOnConnectionFailure(false).build()
+    private val client = CredentialsHolder.client
 
     fun login(username: String, password: String, callback: (LoginError) -> Unit) {
         val jsonString = Gson().toJson(LoginPasswordForm(username, password))

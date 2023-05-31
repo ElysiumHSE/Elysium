@@ -28,8 +28,8 @@ public class CommentController {
     private final Map<Integer, CommentLoader> commentLoaders = new ConcurrentHashMap<>();
     private final UserService userService;
 
-    @PostMapping("/leaveComment")
-    ResponseEntity<Integer> leaveComment(@RequestBody CommentRequest commentForm, @RequestAttribute("UserId") Integer userId) {
+    @PostMapping("/addComment")
+    ResponseEntity<Integer> addComment(@RequestBody CommentRequest commentForm, @RequestAttribute("UserId") Integer userId) {
         int commentId = commentService.addNewCommentWithAllParams(userId, commentForm.getContent());
         trackService.addCommentToCommentsWithTrackId(commentForm.getTrackId(), commentId);
         return new ResponseEntity<>(commentId, HttpStatus.OK);
