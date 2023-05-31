@@ -63,7 +63,7 @@ class MainViewModel @Inject constructor(
 
     fun playOrToggleSong(mediaItem: Song, toggle: Boolean = false) {
         val isPrepared = playbackState.value?.isPrepared ?: false
-        if (isPrepared && mediaItem.mediaId ==
+        if (isPrepared && mediaItem.trackId ==
             curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)) {
             playbackState.value?.let { playbackState ->
                 when {
@@ -73,7 +73,7 @@ class MainViewModel @Inject constructor(
                 }
             }
         } else {
-            musicServiceConnection.transportControls.playFromMediaId(mediaItem.mediaId, null)
+            musicServiceConnection.transportControls.playFromMediaId(mediaItem.trackId, null)
         }
     }
 

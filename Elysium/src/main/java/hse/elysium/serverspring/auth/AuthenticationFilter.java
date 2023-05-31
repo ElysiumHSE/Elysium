@@ -2,6 +2,10 @@ package hse.elysium.serverspring.auth;
 
 import hse.elysium.databaseInteractor.TokenService;
 import hse.elysium.entities.Token;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,21 +49,26 @@ public final class AuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String username = jwtService.extractUsername(token);
-        String issuer = jwtService.extractIssuer(token);
-        if (username != null && issuer.equals("Elysium") &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            Token tokenEntity = tokenService.getTokenWithTokenValue(token);
-            Boolean isValid = jwtService.isTokenValid(token, username);
-            if (isValid && !tokenEntity.getExpired() && !tokenEntity.getRevoked()) {
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, null);
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                log.info("Authentication set");
+        try {
+            String username = jwtService.extractUsername(token);
+            String issuer = jwtService.extractIssuer(token);
+            if (username != null && issuer.equals("Elysium") &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                Token tokenEntity = tokenService.getTokenWithTokenValue(token);
+                Boolean isValid = jwtService.isTokenValid(token, username);
+                if (isValid && !tokenEntity.getExpired() && !tokenEntity.getRevoked()) {
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, null);
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    request.setAttribute("UserId", jwtService.extractUserId(token));
+                    log.info("Authentication set");
+                }
             }
-        }
+        } catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | SignatureException e) {
+            log.info("Incorrect jwt token");
+            }
         filterChain.doFilter(request, response);
     }
 

@@ -1,12 +1,8 @@
 package hse.elysium.serverspring.controller;
 
-import hse.elysium.databaseInteractor.TrackService;
-import hse.elysium.databaseInteractor.UserService;
-import hse.elysium.entities.Track;
-import hse.elysium.entities.User;
 import hse.elysium.serverspring.auth.AuthenticationService;
-import hse.elysium.serverspring.auth.JwtService;
-import hse.elysium.serverspring.auth.UserLoginPasswordForm;
+import hse.elysium.serverspring.forms.UserLoginPasswordForm;
+import hse.elysium.serverspring.forms.PasswordForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpHeaders;
@@ -14,28 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @ComponentScan("hse.elysium")
 @RequestMapping("/elysium")
 @RequiredArgsConstructor
 public class Controller {
 
-    private final TrackService trackService;
-    private final UserService userService;
-    private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
     @PostMapping("/test")
     ResponseEntity<String> testResponse() {
         return ResponseEntity.ok("Authorized");
-    }
-
-    @GetMapping("/getUserInfo")
-    ResponseEntity<User> getUserInfo(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
-        String username = jwtService.extractUsername(token);
-        int user_id = userService.getUserIdWithLogin(username);
-        return new ResponseEntity<>(userService.getUserWithUserId(user_id), HttpStatus.OK);
     }
 
     @PostMapping("/changePassword")
@@ -49,17 +35,5 @@ public class Controller {
             return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
     }
-
-    @GetMapping("/getTrackInfo")
-    ResponseEntity<Track> getTrackInfo(
-            @RequestParam int trackId) {
-        Track track = trackService.getTrackWithTrackId(trackId);
-        if (track == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else {
-            return new ResponseEntity<>(track, HttpStatus.OK);
-        }
-    }
-
 
 }

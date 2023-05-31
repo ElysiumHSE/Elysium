@@ -15,7 +15,7 @@ abstract class BaseSongAdapter(
 
     protected val diffCallback = object : DiffUtil.ItemCallback<Song>() {
         override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean {
-            return oldItem.mediaId == newItem.mediaId
+            return oldItem.trackId == newItem.trackId
         }
 
         override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean {

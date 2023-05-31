@@ -10,27 +10,28 @@ import java.util.ArrayList;
 @Service
 public class TokenService {
     private final EntityManagerFactory
-        entityManagerFactory = Persistence.createEntityManagerFactory("default");
+            entityManagerFactory = Persistence.createEntityManagerFactory("default");
     private final EntityManager entityManager = entityManagerFactory.createEntityManager();
 
     private final Query getTokenIdWithTokenValueQuery = entityManager.createNativeQuery
-        ("SELECT token_id from Token where Token.token_value=:token_value");
+            ("SELECT token_id from Token where Token.token_value=:token_value");
 
     @SuppressWarnings("unchecked")
     private final TypedQuery<String> searchRecordsWithRevokedOrExpiredQuery =
-        (TypedQuery<String>)entityManager.createNativeQuery
-        ("SELECT token_value from Token where Token.revoked=TRUE OR Token.expired=TRUE");
+            (TypedQuery<String>)entityManager.createNativeQuery
+                    ("SELECT token_value from Token where Token.revoked=TRUE OR Token.expired=TRUE");
 
     @SuppressWarnings("unchecked")
     private final TypedQuery<String> setRevokedForUserChangedPasswordWithUserIdQuery =
-        (TypedQuery<String>)entityManager.createNativeQuery
-        ("SELECT token_value from Token where Token.user_id=:user_id", String.class);
+            (TypedQuery<String>)entityManager.createNativeQuery
+                    ("SELECT token_value from Token where Token.user_id=:user_id", String.class);
 
     /**
      * Given a token_value, finds token_id of matching record in Token database table.
-     * @return token_id of corresponding token, if matching record was found, and -1, if matching record was not found.
+     * @return token_id of corresponding token, if matching record was found.
+     * @throws jakarta.persistence.NoResultException, if matching record was not found.
      */
-    public int getTokenIdWithTokenValue(String token_value) {
+    public int getTokenIdWithTokenValue(String token_value) throws NoResultException {
         EntityTransaction transaction = entityManager.getTransaction();
 
         int token_id;
@@ -43,9 +44,6 @@ public class TokenService {
 
             transaction.commit();
 
-        } catch (jakarta.persistence.NoResultException e) {
-            return -1;
-
         } finally {
             if (transaction.isActive()) {
                 transaction.rollback();
@@ -56,13 +54,11 @@ public class TokenService {
 
     /**
      * Given a token_value, finds matching record in Token database table.
-     * @return Object of class Token, if matching record was found, and null otherwise.
+     * @return Object of class Token, if matching record was found.
+     * @throws jakarta.persistence.NoResultException, if matching record was not found.
      */
-    public Token getTokenWithTokenValue(String token_value) {
+    public Token getTokenWithTokenValue(String token_value) throws NoResultException {
         int token_id = getTokenIdWithTokenValue(token_value);
-        if (token_id == -1) {
-            return null;
-        }
 
         EntityTransaction transaction = entityManager.getTransaction();
 
@@ -75,9 +71,6 @@ public class TokenService {
 
             transaction.commit();
 
-        } catch (NoResultException | IllegalArgumentException e) {
-            return null;
-
         } finally {
             if (transaction.isActive()) {
                 transaction.rollback();
@@ -89,14 +82,22 @@ public class TokenService {
     /**
      * Given token_value, revoked flag, expired flag and user_id of a new token, creates a new
      * corresponding record in Token database table.
-     * @return token_id of new token, if adding new record to Token database table was successful,
-     * and -1, if token with corresponding token_value already exists.
+     * @return token_id of new token, if adding new record to Token database table was successful.
+     * @throws jakarta.persistence.PersistenceException, if token with corresponding token_value already exists.
      */
-    public int addNewTokenWithAllParams(String token_value, boolean revoked, boolean expired, int user_id) {
-        int token_id = getTokenIdWithTokenValue(token_value);
+    public synchronized int addNewTokenWithAllParams(String token_value, boolean revoked, boolean expired, int user_id)
+            throws PersistenceException {
 
-        if (token_id != -1) {
-            return -1;
+        int tokenId;
+        try {
+            tokenId = getTokenIdWithTokenValue(token_value);
+        } catch (jakarta.persistence.NoResultException e) {
+            tokenId = -1;
+        }
+
+        if (tokenId != -1) {
+            throw new jakarta.persistence.PersistenceException
+                    ("token with corresponding token_value already exists");
         }
 
         EntityTransaction transaction = entityManager.getTransaction();
@@ -113,45 +114,37 @@ public class TokenService {
 
         transaction.commit();
 
-        token_id = getTokenIdWithTokenValue(token_value);
-        return token_id;
+        tokenId = getTokenIdWithTokenValue(token_value);
+        return tokenId;
     }
 
     /**
      * Given token_value and user_id of a new token, creates a new corresponding record in Token database table.
      * Revoked and expired flags are set false.
      * @return token_id of new token, if adding new record to Token database table was successful,
-     * and -1, if token with corresponding token_value already exists.
+     * @throws jakarta.persistence.PersistenceException, if token with corresponding token_value already exists.
      */
-    public int addNewTokenWithTokenValueUserId(String token_value, int user_id) {
+    public synchronized int addNewTokenWithTokenValueUserId(String token_value, int user_id) throws PersistenceException {
         return addNewTokenWithAllParams(token_value, false, false, user_id);
     }
 
     /**
      * Given token_value, sets revoked flag in a corresponding record in Token database table.
-     * @return 1, if revoked flag was set successfully, 0, if revoked flag was already set true, and -1, if
-     * corresponding record in Token database table was not found.
+     * @return true, if revoked flag was set successfully, and false, if revoked flag was already set true.
+     * @throws jakarta.persistence.NoResultException, if corresponding record in Token database table was not found.
      */
-    public int setRevokedWithTokenValue(String token_value) {
-        int token_id = getTokenIdWithTokenValue(token_value);
+    public synchronized boolean setRevokedWithTokenValue(String token_value) throws NoResultException {
+        int tokenId = getTokenIdWithTokenValue(token_value);
 
-        if (token_id == -1) {
-            return -1;
-        }
-
-        int result;
+        boolean result;
 
         EntityTransaction transaction = entityManager.getTransaction();
 
         transaction.begin();
 
-        Token token = entityManager.getReference(Token.class, token_id);
+        Token token = entityManager.getReference(Token.class, tokenId);
 
-        if (token.getRevoked()) {
-            result = 0;
-        } else {
-            result = 1;
-        }
+        result = !token.getRevoked();
 
         token.setRevoked(true);
 
@@ -162,29 +155,21 @@ public class TokenService {
 
     /**
      * Given token_value, sets expired flag in a corresponding record in Token database table.
-     * @return 1, if expired flag was set successfully, 0, if expired flag was already set true, and -1, if
-     * corresponding record in Token database table was not found.
+     * @return true, if expired flag was set successfully, and false, if expired flag was already set true.
+     * @throws jakarta.persistence.NoResultException, if corresponding record in Token database table was not found.
      */
-    public int setExpiredWithTokenValue(String token_value) {
-        int token_id = getTokenIdWithTokenValue(token_value);
+    public synchronized boolean setExpiredWithTokenValue(String token_value) throws NoResultException {
+        int tokenId = getTokenIdWithTokenValue(token_value);
 
-        if (token_id == -1) {
-            return -1;
-        }
-
-        int result;
+        boolean result;
 
         EntityTransaction transaction = entityManager.getTransaction();
 
         transaction.begin();
 
-        Token token = entityManager.getReference(Token.class, token_id);
+        Token token = entityManager.getReference(Token.class, tokenId);
 
-        if (token.getExpired()) {
-            result = 0;
-        } else {
-            result = 1;
-        }
+        result = !token.getExpired();
 
         token.setExpired(true);
 
@@ -195,15 +180,12 @@ public class TokenService {
 
     /**
      * Given user_id, sets revoked flags in all corresponding records in Token database table.
-     * @return 1, if revoked flags were set successfully, and 0, if no
-     * corresponding records in Token database table were found.
+     * @throws jakarta.persistence.NoResultException, if no corresponding records in Token database table were found.
      */
-    public int setRevokedForUserChangedPasswordWithUserId(int user_id) {
+    public synchronized void setRevokedForUserChangedPasswordWithUserId(int user_id) throws NoResultException {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<String> array;
-
-        int result = 1;
 
         try {
             transaction.begin();
@@ -211,14 +193,7 @@ public class TokenService {
             setRevokedForUserChangedPasswordWithUserIdQuery.setParameter("user_id", user_id);
             array = new ArrayList<>(setRevokedForUserChangedPasswordWithUserIdQuery.getResultList());
 
-            if (array.size() == 0) {
-                result = 0;
-            }
-
             transaction.commit();
-
-        } catch (jakarta.persistence.NoResultException e) {
-            return 0;
 
         } finally {
             if (transaction.isActive()) {
@@ -226,27 +201,18 @@ public class TokenService {
             }
         }
 
-        if (result == 0) {
-            return 0;
-        }
-
         for (String token_value : array) {
             setRevokedWithTokenValue(token_value);
         }
-
-        return 1;
     }
 
     /**
      * Given token_value, deletes matching record of Token database table.
-     * @return Object of class Token representing the deleted record, if matching record was found, and null otherwise.
+     * @return Object of class Token representing the deleted token, if matching record was found.
+     * @throws jakarta.persistence.NoResultException, if matching record was not found.
      */
-    public Token deleteTokenWithTokenValue(String token_value) {
+    public synchronized Token deleteTokenWithTokenValue(String token_value) throws NoResultException {
         Token token = getTokenWithTokenValue(token_value);
-
-        if (token == null) {
-            return null;
-        }
 
         EntityTransaction transaction = entityManager.getTransaction();
 
@@ -261,29 +227,18 @@ public class TokenService {
 
     /**
      * Deletes records with revoked or expired flags set in Token database table.
-     * @return 1, if corresponding records were deleted successfully, and 0, if no
-     * corresponding records in Token database table were found.
      */
-    public int deleteRecordsWithRevokedOrExpired() {
+    public synchronized void deleteRecordsWithRevokedOrExpired() {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<String> array;
-
-        int result = 1;
 
         try {
             transaction.begin();
 
             array = new ArrayList<>(searchRecordsWithRevokedOrExpiredQuery.getResultList());
 
-            if (array.size() == 0) {
-                result = 0;
-            }
-
             transaction.commit();
-
-        } catch (jakarta.persistence.NoResultException e) {
-            return 0;
 
         } finally {
             if (transaction.isActive()) {
@@ -291,21 +246,15 @@ public class TokenService {
             }
         }
 
-        if (result == 0) {
-            return 0;
-        }
-
         for (String token_value : array) {
             deleteTokenWithTokenValue(token_value);
         }
-
-        return 1;
     }
 
     /**
      * Close entity manager and entity manager factory when finished working with class.
      */
-    public void closeHandler() {
+    public synchronized void closeHandler() {
         entityManager.close();
         entityManagerFactory.close();
     }

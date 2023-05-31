@@ -1,33 +1,41 @@
 package hse.elysium.databaseInteractor;
 
+import hse.elysium.entities.User;
 import jakarta.persistence.*;
 
 import hse.elysium.entities.Track;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TrackService {
     private final EntityManagerFactory
-        entityManagerFactory = Persistence.createEntityManagerFactory("default");
+            entityManagerFactory = Persistence.createEntityManagerFactory("default");
     private final EntityManager entityManager = entityManagerFactory.createEntityManager();
 
     private final Query getMaxTrackId = entityManager.createNativeQuery
-        ("SELECT MAX(track_id) from Track");
+            ("SELECT MAX(track_id) from Track");
 
     @SuppressWarnings("unchecked")
     private final TypedQuery<Track> getTracksWithTrackIdsQuery =
-        (TypedQuery<Track>)entityManager.createNativeQuery
-        ("SELECT * FROM Track where track_id IN :track_id_array", Track.class);
+            (TypedQuery<Track>) entityManager.createNativeQuery
+                    ("SELECT * FROM Track where track_id IN :track_id_array", Track.class);
+
+    @SuppressWarnings("unchecked")
+    private final TypedQuery<Track> getAllTracksQuery =
+            (TypedQuery<Track>) entityManager.createNativeQuery
+                    ("SELECT * FROM Track", Track.class);
 
     /**
-     * Given Set of track_id's, finds matching records with corresponding track_id's
+     * Given List of track_id's, finds matching records with corresponding track_id's
      * in Track database table.
-     * @return ArrayList of Track objects, if at least one track_id from given Set was matched successfully,
+     *
+     * @return List of Track objects, if at least one track_id from given List was matched successfully,
      * and null, if no matches were found.
      */
-    public ArrayList<Track> getTracksWithTrackIds(ArrayList<Integer> arrayOfTrackIds) {
+    public List<Track> getTracksWithTrackIds(List<Integer> arrayOfTrackIds) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<Track> array;
@@ -52,7 +60,37 @@ public class TrackService {
     }
 
     /**
+     * Finds tracks in Track database table.
+     *
+     * @return List of Track objects, if at least one track is present,
+     * and null, if no matches were found.
+     */
+    public List<Track> getAllTracks() {
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        ArrayList<Track> array;
+
+        try {
+            transaction.begin();
+
+            array = new ArrayList<>(getAllTracksQuery.getResultList());
+
+            transaction.commit();
+
+        } catch (jakarta.persistence.NoResultException e) {
+            return null;
+
+        } finally {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+        }
+        return array;
+    }
+
+    /**
      * Given a track_id, finds matching record in Track database table.
+     *
      * @return Object of class Track, if matching record was found, and null otherwise.
      */
     public Track getTrackWithTrackId(int track_id) {
@@ -79,12 +117,36 @@ public class TrackService {
     }
 
     /**
+     * Given a track_id, finds comments of corresponding track in a matching record of Track database table.
+     *
+     * @return List of Integers representing comment ids, if matching record was found, and null otherwise.
+     */
+    public List<Integer> getTrackCommentsWithTrackId(int track_id) {
+        Track track = getTrackWithTrackId(track_id);
+        if (track == null) {
+            return null;
+        } else {
+            String comments = track.getComments();
+            if (comments == null || comments.equals("")) {
+                return null;
+            }
+            String[] commentIds = comments.split("\\|");
+            ArrayList<Integer> arrayOfCommentIds = new ArrayList<>();
+            for (String str : commentIds) {
+                arrayOfCommentIds.add(Integer.parseInt(str));
+            }
+            return arrayOfCommentIds;
+        }
+    }
+
+    /**
      * Given name, author, genre, mood, music_url and cover_url, adds a new record with given parameters
      * to Track database table. Value of streams of a new track record is set 0.
-     * @return track_id of new record, if new record table was added to Track database successfully, and 0 otherwise.
+     *
+     * @return track_id of new record
      */
-    public int addNewTrackWithAllParams(String name, String author, String genre, String mood,
-                                               String music_url, String cover_url) {
+    public synchronized int addNewTrackWithAllParams(String name, String author, String genre, String mood,
+                                                     String music_url, String cover_url) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         try {
@@ -102,36 +164,36 @@ public class TrackService {
             entityManager.merge(track);
 
             transaction.commit();
-        } catch (IllegalArgumentException e) {
-            return 0;
 
         } finally {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
         }
-        return (int)getMaxTrackId.getSingleResult();
+        return (int) getMaxTrackId.getSingleResult();
     }
 
     /**
      * Given name, author, genre and mood, adds a new record with given parameters
      * to Track database table. Values of music_url and cover_url are set null.
      * Value of streams of a new track record is set 0.
-     * @return track_id of new record, if new record table was added to Track database successfully, and 0 otherwise.
+     *
+     * @return track_id of new record
      */
-    public int addNewTrackWithNameAuthorGenreMood(String name, String author, String genre, String mood) {
+    public synchronized int addNewTrackWithNameAuthorGenreMood(String name, String author, String genre, String mood) {
         return addNewTrackWithAllParams(name, author, genre, mood, null, null);
     }
 
     /**
      * Given Track object, updates parameters in matching record of Track database table.
-     * @return 1, if parameters were updated successfully, and 0,
+     *
+     * @return true, if parameters were updated successfully, and false,
      * if track_id of given Track object did not match any of Track database table records or
      * given Track object is null.
      */
-    public int updateTrackAllParamsWithUpdatedTrack(Track updated_track) {
+    public synchronized boolean updateTrackAllParamsWithUpdatedTrack(Track updated_track) {
         if (updated_track == null) {
-            return 0;
+            return false;
         }
 
         EntityTransaction transaction = entityManager.getTransaction();
@@ -140,7 +202,7 @@ public class TrackService {
 
         Track track = entityManager.getReference(Track.class, updated_track.getTrackId());
         if (track == null) {
-            return 0;
+            return false;
         }
 
         track.setName(updated_track.getName());
@@ -150,17 +212,19 @@ public class TrackService {
         track.setMusicUrl(updated_track.getMusicUrl());
         track.setCoverUrl(updated_track.getCoverUrl());
         track.setStreams(updated_track.getStreams());
+        track.setComments(updated_track.getComments());
 
         transaction.commit();
 
-        return 1;
+        return true;
     }
 
     /**
      * Given track_id, deletes matching record of Track database table.
+     *
      * @return Object of class Track representing the deleted record, if matching record was found, and null otherwise.
      */
-    public Track deleteTrackWithTrackId(int track_id) {
+    public synchronized Track deleteTrackWithTrackId(int track_id) {
         Track track = getTrackWithTrackId(track_id);
 
         if (track == null) {
@@ -179,10 +243,86 @@ public class TrackService {
     }
 
     /**
-     * Given track_id, increments number of streams in matching record of Track database table.
-     * @return 1, if streams of matching record was incremented successfully, and 0, if matching record was not found.
+     * Given track_id and comment_id, finds comment with corresponding comment_id in track's comments
+     * in a corresponding record in Track database table.
+     *
+     * @return index of comments' string, if comment with corresponding comment_id was found.
+     * @throws jakarta.persistence.NoResultException,    if comment was not found.
+     * @throws jakarta.persistence.PersistenceException, if track was not found.
      */
-    public int incrementStreamsWithTrackId(int track_id) {
+    public int findCommentInTracksComments(int track_id, int comment_id) throws NoResultException, PersistenceException {
+        Track track = getTrackWithTrackId(track_id);
+        if (track == null) {
+            throw new jakarta.persistence.PersistenceException("track was not found");
+        }
+
+        String currentComments = track.getComments();
+
+        if (currentComments == null) {
+            throw new jakarta.persistence.NoResultException("comment was not found");
+        } else {
+            int commentIdx = currentComments.indexOf("|" + comment_id + "|");
+            if (commentIdx == -1) {
+                commentIdx = currentComments.indexOf(comment_id + "|");
+                if (commentIdx != 0) {
+                    throw new jakarta.persistence.NoResultException("comment was not found");
+                } else {
+                    return commentIdx;
+                }
+            } else {
+                return commentIdx;
+            }
+        }
+    }
+
+    /**
+     * Given track_id and comment_id, adds comment with corresponding comment_id to track's comments
+     * in a corresponding record in Track database table.
+     *
+     * @return true, if comment with corresponding comment_id was added to comments successfully,
+     * and false, if comment is already in comments.
+     * @throws jakarta.persistence.PersistenceException, if track_id is invalid.
+     */
+    public synchronized boolean addCommentToCommentsWithTrackId(int track_id, int comment_id) throws PersistenceException {
+        int commentIdx;
+        try {
+            commentIdx = findCommentInTracksComments(track_id, comment_id);
+        } catch (jakarta.persistence.NoResultException e) {
+            commentIdx = -1;
+        }
+
+        if (commentIdx >= 0) {
+            return false;
+        }
+
+        EntityTransaction transaction = entityManager.getTransaction();
+
+        transaction.begin();
+
+        Track track = entityManager.getReference(Track.class, track_id);
+        String currentComments = track.getComments();
+
+        String newComments;
+        if (currentComments == null) {
+            newComments = comment_id + "|";
+        } else {
+            newComments = currentComments + comment_id + "|";
+        }
+
+        track.setComments(newComments);
+
+        transaction.commit();
+
+        return true;
+    }
+
+    /**
+     * Given track_id, increments number of streams in matching record of Track database table.
+     *
+     * @return true, if streams of matching record was incremented successfully,
+     * and false, if matching record was not found.
+     */
+    public synchronized boolean incrementStreamsWithTrackId(int track_id) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         try {
@@ -195,20 +335,20 @@ public class TrackService {
             transaction.commit();
 
         } catch (IllegalArgumentException | EntityNotFoundException e) {
-            return 0;
+            return false;
 
         } finally {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
         }
-        return 1;
+        return true;
     }
 
     /**
      * Close entity manager and entity manager factory when finished working with class.
      */
-    public void closeHandler() {
+    public synchronized void closeHandler() {
         entityManager.close();
         entityManagerFactory.close();
     }
