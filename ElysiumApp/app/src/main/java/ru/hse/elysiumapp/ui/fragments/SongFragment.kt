@@ -80,13 +80,13 @@ class SongFragment : Fragment(R.layout.fragment_song) {
     }
 
     private fun updateSongData(song: Song) {
-        binding.tvSongName.text = song.title
+        binding.tvSongName.text = song.name
         binding.tvSongAuthor.text = song.author
-        glide.load(song.imageUrl).into(binding.ivSongImage)
+        glide.load(song.coverUrl).into(binding.ivSongImage)
         binding.ivComment.apply {
             isEnabled = true
             setOnClickListener {
-                val sheet = CommentsFragment(song.mediaId)
+                val sheet = CommentsFragment(song.trackId)
                 fragmentManager?.let { sheet.show(it, sheet.tag) }
             }
         }
