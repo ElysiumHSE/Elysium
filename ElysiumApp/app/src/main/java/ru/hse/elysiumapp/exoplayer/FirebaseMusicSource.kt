@@ -5,6 +5,7 @@ import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.MediaMetadataCompat.*
+import android.util.Log
 import androidx.core.net.toUri
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
@@ -14,11 +15,13 @@ import ru.hse.elysiumapp.data.remote.MusicDatabase
 import ru.hse.elysiumapp.exoplayer.State.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.hse.elysiumapp.data.remote.CommentDatabase
 import javax.inject.Inject
 
 class FirebaseMusicSource @Inject constructor(
-    private val musicDatabase: MusicDatabase
-){
+    private val musicDatabase: MusicDatabase,
+    private val commentDatabase: CommentDatabase
+) {
     var songs = emptyList<MediaMetadataCompat>()
 
     suspend fun fetchMediaData() = withContext(Dispatchers.IO) {

@@ -12,6 +12,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ServiceScoped
+import ru.hse.elysiumapp.data.remote.CommentDatabase
 import ru.hse.elysiumapp.data.remote.MusicDatabase
 
 
@@ -22,6 +23,10 @@ object ServiceModule {
     @ServiceScoped
     @Provides
     fun provideMusicDatabase() = MusicDatabase()
+
+    @ServiceScoped
+    @Provides
+    fun provideCommentDatabase() = CommentDatabase()
 
     @ServiceScoped
     @Provides

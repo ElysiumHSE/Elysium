@@ -37,13 +37,13 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
         binding.apply {
-            tvNickname.text = comment.nickname
+            tvNickname.text = comment.username
             tvDatetime.text = dateFormat.format(
                 Date(
                     comment.publicationDatetime?.time ?: 0
                 )
             )
-            tvComment.text = comment.text
+            tvComment.text = comment.content
         }
     }
 }
