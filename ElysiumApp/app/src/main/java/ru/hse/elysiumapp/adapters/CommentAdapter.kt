@@ -43,7 +43,7 @@ class CommentAdapter : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() 
                     comment.publicationDatetime?.time ?: 0
                 )
             )
-            tvComment.text = comment.content
+            tvContent.text = comment.content
         }
     }
 }
