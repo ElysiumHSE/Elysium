@@ -1,7 +1,12 @@
 package ru.hse.elysiumapp.other
 
 object Constants {
-    const val BASE_URL = "http://10.0.2.2:8080/elysium/"
+
+    const val HOST = "10.0.2.2"
+
+    const val PORT = 8080
+
+    const val BASE_URL = "http://$HOST:$PORT/elysium/"
 
     const val SONG_COLLECTION = "songs"
 

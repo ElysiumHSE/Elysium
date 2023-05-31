@@ -61,4 +61,10 @@ public class CommentLoader {
         return loadFromCached(track_id);
     }
 
+    public List<Comment> loadAllComments(int track_id) {
+        List<Integer> commentIds = trackService.getTrackCommentsWithTrackId(track_id);
+        if (commentIds == null) return null;
+        return commentService.getCommentsWithCommentIds(commentIds);
+    }
+
 }

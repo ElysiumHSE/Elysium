@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class CommentResponse {
     int trackId;
     int commentId;
-    String userName;
+    String username;
     String content;
 }
