@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.min;
+
 @Service
 public class TrackService {
     private final EntityManagerFactory
@@ -86,6 +88,88 @@ public class TrackService {
             }
         }
         return array;
+    }
+
+    /**
+     * A utility function to calculate Levenshtein distance.
+     */
+    private int levenshtein(String x, String y) {
+        int[][] dp = new int[x.length() + 1][y.length() + 1];
+
+        for (int i = 0; i <= x.length(); i++) {
+            for (int j = 0; j <= y.length(); j++) {
+                if (i == 0) {
+                    dp[i][j] = j;
+                }
+                else if (j == 0) {
+                    dp[i][j] = i;
+                }
+                else {
+                    dp[i][j] = min(dp[i - 1][j - 1] + (x.charAt(i - 1) == y.charAt(j - 1) ? 0 : 1),
+                            min(dp[i - 1][j] + 1, dp[i][j - 1] + 1));
+                }
+            }
+        }
+
+        return dp[x.length()][y.length()];
+    }
+
+    /**
+     * Given String input and max number of typos, finds tracks in Track database table
+     * whose names or authors fit the given search query.
+     *
+     * @return List of Track objects, if at least one track fits,
+     * and null, if no matches were found.
+     */
+    public List<Track> searchWithTypos(String input, int maxNumberOfTypos) {
+        List<Track> tracks = getAllTracks();
+        if (tracks == null) {
+            return null;
+        }
+
+        class TrackWithImportance {
+            final Track track;
+            final int importance;
+            final boolean isSubstring;
+
+            TrackWithImportance(Track track, int importance, boolean isSubstring) {
+                this.track = track;
+                this.importance = importance;
+                this.isSubstring = isSubstring;
+            }
+        }
+
+        List<TrackWithImportance> trackWithImportance = new ArrayList<>();
+        for (Track track : tracks) {
+            if (track.getName().toLowerCase().contains(input.trim().toLowerCase()) ||
+                    track.getAuthor().toLowerCase().contains(input.trim().toLowerCase())) {
+                trackWithImportance.add(new TrackWithImportance(track, input.trim().length(), true));
+                continue;
+            }
+            int nameDistance = levenshtein(input.trim().toLowerCase(), track.getName().toLowerCase());
+            int authorDistance = levenshtein(input.trim().toLowerCase(), track.getAuthor().toLowerCase());
+            if (nameDistance <= maxNumberOfTypos || authorDistance <= maxNumberOfTypos) {
+                trackWithImportance.add(new TrackWithImportance(track, input.trim().length(), false));
+            }
+        }
+
+        return trackWithImportance.stream()
+                .sorted((a, b) -> {
+                    if (a.importance == b.importance) {
+                        if (a.isSubstring && !b.isSubstring) {
+                            return -1;
+                        }
+                        if (!a.isSubstring && b.isSubstring) {
+                            return 1;
+                        }
+                        return 0;
+                    } else {
+                        return a.importance > b.importance ? -1 : 1;
+                    }
+                })
+                .map(a -> a.track)
+                .limit(5)
+                .toList();
     }
 
     /**
