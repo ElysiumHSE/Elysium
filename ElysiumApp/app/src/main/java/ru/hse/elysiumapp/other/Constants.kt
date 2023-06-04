@@ -6,7 +6,9 @@ object Constants {
 
     const val PORT = 8080
 
-    const val BASE_URL = "http://$HOST:$PORT/elysium/"
+    const val SCHEME = "http"
+
+    const val BASE_URL = "$SCHEME://$HOST:$PORT/elysium/"
 
     const val SONG_COLLECTION = "songs"
 
