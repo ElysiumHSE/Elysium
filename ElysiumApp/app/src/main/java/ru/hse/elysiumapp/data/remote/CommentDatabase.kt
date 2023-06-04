@@ -20,7 +20,7 @@ import java.util.concurrent.CountDownLatch
 
 class CommentDatabase {
 
-    val client = CredentialsHolder.client
+    private val client = CredentialsHolder.client
 
     suspend fun loadAllComments(trackId: Int): List<Comment> {
         return try {

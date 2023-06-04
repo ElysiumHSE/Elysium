@@ -18,6 +18,7 @@ import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import ru.hse.elysiumapp.data.entities.Comment
 import ru.hse.elysiumapp.exoplayer.callbacks.MusicPlaybackPreparer
 import ru.hse.elysiumapp.exoplayer.callbacks.MusicPlayerEventListener
 import ru.hse.elysiumapp.exoplayer.callbacks.MusicPlayerNotificationListener
@@ -59,6 +60,9 @@ class MusicService : MediaBrowserServiceCompat() {
 
     companion object {
         var curSongDuration = 0L
+            private set
+
+        lateinit var loadCommentsForTrack: (Int, (List<Comment>) -> Unit) -> Unit
             private set
     }
 
@@ -115,6 +119,12 @@ class MusicService : MediaBrowserServiceCompat() {
                     false
                 )
                 isPlayerInitialized = true
+            }
+        }
+
+        loadCommentsForTrack = { trackId, applyComments ->
+            serviceScope.launch {
+                firebaseMusicSource.fetchCommentData(trackId, applyComments)
             }
         }
     }
