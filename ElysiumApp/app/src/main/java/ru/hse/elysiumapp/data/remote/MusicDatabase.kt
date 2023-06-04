@@ -9,7 +9,6 @@ import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.Response
-import ru.hse.elysiumapp.data.entities.Comment
 import ru.hse.elysiumapp.data.entities.Song
 import ru.hse.elysiumapp.network.CredentialsHolder
 import ru.hse.elysiumapp.other.Constants
@@ -18,7 +17,7 @@ import java.net.HttpURLConnection
 import java.util.concurrent.CountDownLatch
 
 class MusicDatabase {
-    val client = CredentialsHolder.client
+    private val client = CredentialsHolder.client
     suspend fun getAllSongs(): List<Song> {
         return try {
             val request = Request
