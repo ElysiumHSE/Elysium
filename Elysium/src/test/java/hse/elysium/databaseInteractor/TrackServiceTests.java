@@ -126,5 +126,18 @@ public class TrackServiceTests {
         List<Track> result = ts.getAllTracks();
         Assertions.assertNotNull(result);
         // Assertions.assertEquals(4, result.size());
+        ts.closeHandler();
+    }
+
+    // Check at least compiles or smth
+    //@Test
+    public void searchWithTyposTest() {
+        TrackService ts = new TrackService();
+        List<Track> result = ts.searchWithTypos("dvrts", 2);
+        for (Track track : result) {
+            System.out.println(track.getName());
+            System.out.println(track.getAuthor());
+        }
+        ts.closeHandler();
     }
 }
