@@ -20,7 +20,7 @@ class CommentDatabase {
     suspend fun loadAllComments(trackId: Int): List<Comment> {
         return try {
             val url = HttpUrl.Builder()
-                .scheme("http")
+                .scheme(Constants.SCHEME)
                 .host(Constants.HOST)
                 .port(Constants.PORT)
                 .addPathSegment("elysium")

@@ -119,7 +119,7 @@ public class TrackService {
      * whose names or authors fit the given search query.
      *
      * @return List of Track objects, if at least one track fits,
-     * and null, if no matches were found.
+     * and empty list, if no matches were found.
      */
     public List<Track> searchWithTypos(String input, int maxNumberOfTypos) {
         List<Track> tracks = getAllTracks();

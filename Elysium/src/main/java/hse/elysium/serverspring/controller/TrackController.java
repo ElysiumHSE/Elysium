@@ -39,5 +39,13 @@ public class TrackController {
         }
     }
 
+    @GetMapping("/searchWithTypos")
+    ResponseEntity<List<Track>> searchWithTypos(@RequestParam String input, @RequestParam int typos) {
+        List<Track> tracks = trackService.searchWithTypos(input, typos);
+        if (tracks.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(tracks, HttpStatus.OK);
+    }
 
 }
