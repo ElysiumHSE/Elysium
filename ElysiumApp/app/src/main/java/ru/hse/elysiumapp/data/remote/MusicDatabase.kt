@@ -16,6 +16,7 @@ import java.util.concurrent.CountDownLatch
 
 class MusicDatabase {
     val client = CredentialsHolder.client
+
     suspend fun getAllSongs(): List<Song> {
         return try {
             val request = Request

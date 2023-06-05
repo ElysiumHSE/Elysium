@@ -13,3 +13,10 @@ enum class RegisterError {
     UNKNOWN_RESPONSE,
     USER_ALREADY_EXISTS
 }
+
+enum class AddCommentsError {
+    OK,
+    CALL_FAILURE,
+    UNKNOWN_RESPONSE,
+    UNAUTHORIZED
+}
