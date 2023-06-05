@@ -59,8 +59,8 @@ class CommentDatabase {
                             val typeToken = object : TypeToken<List<Comment>>() {}.type
                             result = Gson().fromJson(response.body!!.string(), typeToken)
                             Log.println(Log.INFO, "Got comments", result.size.toString())
-                            for (song in result) {
-                                Log.println(Log.INFO, "comment", Gson().toJson(song))
+                            for (comment in result) {
+                                Log.println(Log.INFO, "comment", Gson().toJson(comment))
                             }
                         }
                     }

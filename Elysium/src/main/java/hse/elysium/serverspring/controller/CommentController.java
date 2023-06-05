@@ -47,7 +47,8 @@ public class CommentController {
         List<CommentResponse> commentResponses = comments.stream().map(comment -> new CommentResponse(trackId,
                 comment.getCommentId(),
                 userService.getUserLoginWithUserId(comment.getUserId()),
-                comment.getContent())).toList();
+                comment.getContent(),
+                comment.getTime())).toList();
         return new ResponseEntity<>(commentResponses, HttpStatus.OK);
     }
 
@@ -63,7 +64,8 @@ public class CommentController {
         List<CommentResponse> commentResponses = comments.stream().map(comment -> new CommentResponse(trackId,
                 comment.getCommentId(),
                 userService.getUserLoginWithUserId(comment.getUserId()),
-                comment.getContent())).toList();
+                comment.getContent(),
+                comment.getTime())).toList();
         return new ResponseEntity<>(commentResponses, HttpStatus.OK);
     }
 }
