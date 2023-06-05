@@ -9,6 +9,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.hse.elysiumapp.R
 import ru.hse.elysiumapp.adapters.CommentAdapter
 import ru.hse.elysiumapp.databinding.FragmentCommentsBinding
+import ru.hse.elysiumapp.exoplayer.toSong
 import ru.hse.elysiumapp.other.Status
 import ru.hse.elysiumapp.ui.viewmodels.CommentViewModel
 import javax.inject.Inject
@@ -40,7 +41,7 @@ class CommentsFragment(
     }
 
     private fun subscribeToObservers() {
-        commentViewModel.commentItems.observe(this@CommentsFragment) {result ->
+        commentViewModel.commentItems.observe(this@CommentsFragment) { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     result.data?.let { comments ->
@@ -54,6 +55,12 @@ class CommentsFragment(
                 }
                 Status.ERROR -> showNoComments()
                 Status.LOADING -> showLoading()
+            }
+        }
+        commentViewModel.curPlayingSong.observe(this@CommentsFragment) {
+            val curPlayingSong = it?.toSong() ?: return@observe
+            if (trackId != curPlayingSong.trackId) {
+                dismiss()
             }
         }
     }
