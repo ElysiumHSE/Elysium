@@ -39,10 +39,12 @@ class CommentsFragment(
 
         with (binding) {
             ivSendComment.setOnClickListener {
-                if (evInputComment.text?.isNotEmpty() == true) {
+                if (evInputComment.text?.isNotEmpty() != null) {
                     Log.d("COMMENT", "Send comment: " + evInputComment.text)
+                    val content = evInputComment.text!!.toString()
+                    evInputComment.text!!.clear()
                     closeKeyboard()
-                    commentViewModel.uploadComment(trackId.toInt(), evInputComment.text.toString())
+                    commentViewModel.uploadCommentAndUpdate(trackId.toInt(), content)
                 }
             }
         }
