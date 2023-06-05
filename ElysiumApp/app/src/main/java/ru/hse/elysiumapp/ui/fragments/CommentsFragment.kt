@@ -1,7 +1,10 @@
 package ru.hse.elysiumapp.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -33,6 +36,16 @@ class CommentsFragment(
         subscribeToObservers()
 
         commentViewModel.loadComments(trackId.toInt())
+
+        with (binding) {
+            ivSendComment.setOnClickListener {
+                if (evInputComment.text?.isNotEmpty() == true) {
+                    Log.d("COMMENT", "Send comment: " + evInputComment.text)
+                    closeKeyboard()
+                    commentViewModel.uploadComment(trackId.toInt(), evInputComment.text.toString())
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() = binding.rvAllComments.apply {
@@ -81,5 +94,10 @@ class CommentsFragment(
         binding.allCommentsProgressBar.visibility = View.GONE
         binding.tvNoComments.visibility = View.VISIBLE
         binding.rvAllComments.visibility = View.GONE
+    }
+
+    private fun closeKeyboard() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 }
