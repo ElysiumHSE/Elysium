@@ -13,10 +13,10 @@ public class CommentServiceTests {
         int id = cs.addNewCommentWithAllParams(1, "Wow!!!11");
 
         TrackService ts = new TrackService();
-        Assertions.assertNull(ts.getTrackCommentsWithTrackId(1));
+        Assertions.assertNull(ts.getTrackCommentsWithTrackId(14));
 
-        ts.addCommentToCommentsWithTrackId(1, id);
-        List<Integer> res = ts.getTrackCommentsWithTrackId(1);
+        ts.addCommentToCommentsWithTrackId(14, id);
+        List<Integer> res = ts.getTrackCommentsWithTrackId(14);
         Assertions.assertEquals(1, res.size());
         Assertions.assertEquals(id, res.get(0));
 

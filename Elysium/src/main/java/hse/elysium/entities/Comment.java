@@ -2,6 +2,7 @@ package hse.elysium.entities;
 
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -16,6 +17,9 @@ public class Comment {
     @Basic
     @Column(name = "content")
     private String content;
+    @Basic
+    @Column(name = "time")
+    private Timestamp time;
 
     public int getCommentId() {
         return commentId;
@@ -41,16 +45,26 @@ public class Comment {
         this.content = content;
     }
 
+    public Timestamp getTime() {
+        return time;
+    }
+
+    public void setTime(Timestamp time) {
+        this.time = time;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Comment comment = (Comment) o;
-        return commentId == comment.commentId && userId == comment.userId && Objects.equals(content, comment.content);
+        return commentId == comment.commentId && userId == comment.userId
+                && Objects.equals(content, comment.content)
+                && Objects.equals(time, comment.time);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(commentId, userId, content);
+        return Objects.hash(commentId, userId, content, time);
     }
 }
