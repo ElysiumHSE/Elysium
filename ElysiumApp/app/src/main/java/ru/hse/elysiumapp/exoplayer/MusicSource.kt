@@ -18,7 +18,7 @@ import ru.hse.elysiumapp.data.entities.Comment
 import ru.hse.elysiumapp.data.remote.CommentDatabase
 import javax.inject.Inject
 
-class FirebaseMusicSource @Inject constructor(
+class MusicSource @Inject constructor(
     private val musicDatabase: MusicDatabase,
     private val commentDatabase: CommentDatabase
 ) {
@@ -46,6 +46,10 @@ class FirebaseMusicSource @Inject constructor(
     suspend fun fetchCommentData(trackId: Int, applyComments: (List<Comment>) -> Unit) = withContext(Dispatchers.IO) {
         val allComments = commentDatabase.loadAllComments(trackId)
         applyComments(allComments)
+    }
+
+    suspend fun uploadComment(trackId: Int, content: String) {
+        commentDatabase.addComment(trackId, content)
     }
 
     fun asMediaSource(dataSourceFactory: DefaultDataSource.Factory): ConcatenatingMediaSource {
