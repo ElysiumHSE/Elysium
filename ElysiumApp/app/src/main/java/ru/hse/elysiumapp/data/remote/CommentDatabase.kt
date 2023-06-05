@@ -12,7 +12,6 @@ import ru.hse.elysiumapp.data.entities.Comment
 import ru.hse.elysiumapp.forms.CommentRequestForm
 import ru.hse.elysiumapp.network.AddCommentsError
 import ru.hse.elysiumapp.network.CredentialsHolder
-import ru.hse.elysiumapp.network.LoginError
 import ru.hse.elysiumapp.other.Constants
 import java.io.IOException
 import java.net.HttpURLConnection
