@@ -49,7 +49,7 @@ class CommentDatabase {
                     when (response.code) {
                         (HttpURLConnection.HTTP_UNAUTHORIZED) -> {
                             result = emptyList()
-                            Log.println(Log.WARN, "Unauthorized", "You are suddenly unauthorized")
+                            Log.println(Log.WARN, "loadAllComments", "You are suddenly unauthorized")
                         }
                         (HttpURLConnection.HTTP_NO_CONTENT) -> {
                             result = emptyList()

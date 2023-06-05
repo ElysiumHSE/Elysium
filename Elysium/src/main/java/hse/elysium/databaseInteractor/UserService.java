@@ -24,7 +24,7 @@ public class UserService implements UserDetailsService {
      * Given a user_id, finds matching record in User database table.
      * @return Object of class User, if matching record was found, and null otherwise.
      */
-    public User getUserWithUserId(int user_id) {
+    public synchronized User getUserWithUserId(int user_id) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         User user;
@@ -146,7 +146,7 @@ public class UserService implements UserDetailsService {
      * @return user_id of corresponding user, if matching record was found.
      * @throws jakarta.persistence.NoResultException, if matching record was not found.
      */
-    public int getUserIdWithLogin(String login) throws NoResultException {
+    public synchronized int getUserIdWithLogin(String login) throws NoResultException {
         EntityTransaction transaction = entityManager.getTransaction();
 
         int userId;
