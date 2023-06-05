@@ -27,8 +27,15 @@ class CommentViewModel @Inject constructor(
         }
     }
 
+    @Suppress("unused")
     fun uploadComment(trackId: Int, content: String) {
         MusicService.uploadComment(trackId, content)
-        loadComments(trackId)
+    }
+
+    fun uploadCommentAndUpdate(trackId: Int, content: String) {
+        _commentItems.postValue(Resource.loading(null))
+        MusicService.uploadCommentAndUpdate(trackId, content) { result ->
+            _commentItems.postValue(Resource.success(result))
+        }
     }
 }

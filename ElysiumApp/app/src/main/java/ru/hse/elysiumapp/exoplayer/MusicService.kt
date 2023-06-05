@@ -67,6 +67,9 @@ class MusicService : MediaBrowserServiceCompat() {
 
         lateinit var uploadComment: (Int, String) -> Unit
             private set
+
+        lateinit var uploadCommentAndUpdate: (Int, String, (List<Comment>) -> Unit) -> Unit
+            private set
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -134,6 +137,13 @@ class MusicService : MediaBrowserServiceCompat() {
         uploadComment = { trackId, content ->
             serviceScope.launch {
                 musicSource.uploadComment(trackId, content)
+            }
+        }
+
+        uploadCommentAndUpdate = { trackId, content, applyComments ->
+            serviceScope.launch {
+                musicSource.uploadComment(trackId, content)
+                musicSource.fetchCommentData(trackId, applyComments)
             }
         }
     }
