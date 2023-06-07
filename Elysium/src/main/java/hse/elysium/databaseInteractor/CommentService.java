@@ -22,13 +22,13 @@ public class CommentService {
     @SuppressWarnings("unchecked")
     private final TypedQuery<Comment> getCommentsWithCommentIdsQuery =
             (TypedQuery<Comment>)entityManager.createNativeQuery
-                    ("SELECT * FROM Comment where comment_id IN :comment_id_array", Comment.class);
+                    ("SELECT * FROM Comment where track_id = :track_id", Comment.class);
 
     /**
      * Given a comment_id, finds matching record in Comment database table.
      * @return Object of class Comment, if matching record was found, and null otherwise.
      */
-    public synchronized Comment getCommentWithCommentId(int comment_id) {
+    public Comment getCommentWithCommentId(int comment_id) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         Comment comment;
@@ -52,12 +52,12 @@ public class CommentService {
     }
 
     /**
-     * Given List of comment_id's, finds matching records with corresponding comment_id's
+     * Given a track_id, finds matching records with corresponding track_id's
      * in Comment database table.
-     * @return List of Comment objects, if at least one comment_id from given List was matched successfully,
+     * @return List of Comment objects, if at least one record with given track_id was found,
      * and null, if no matches were found.
      */
-    public synchronized List<Comment> getCommentsWithCommentIds(List<Integer> arrayOfCommentIds) {
+    public List<Comment> getCommentsWithTrackId(int track_id) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<Comment> array;
@@ -65,7 +65,7 @@ public class CommentService {
         try {
             transaction.begin();
 
-            getCommentsWithCommentIdsQuery.setParameter("comment_id_array", arrayOfCommentIds);
+            getCommentsWithCommentIdsQuery.setParameter("track_id", track_id);
             array = new ArrayList<>(getCommentsWithCommentIdsQuery.getResultList());
 
             transaction.commit();
@@ -85,7 +85,7 @@ public class CommentService {
      * Given user_id and content, adds a new record with given parameters to Comment database table.
      * @return comment_id of new record
      */
-    public synchronized int addNewCommentWithAllParams(int user_id, String content) {
+    public synchronized int addNewCommentWithAllParams(int user_id, String content, int track_id) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         try {
@@ -95,6 +95,7 @@ public class CommentService {
             comment.setUserId(user_id);
             comment.setContent(content);
             comment.setTime(Timestamp.valueOf(LocalDateTime.now(ZoneId.of("Europe/Moscow"))));
+            comment.setTrackId(track_id);
 
             entityManager.merge(comment);
 

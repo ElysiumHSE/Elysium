@@ -1,5 +1,6 @@
 package hse.elysium.databaseInteractor;
 
+import hse.elysium.entities.Comment;
 import hse.elysium.entities.User;
 import jakarta.persistence.*;
 
@@ -203,23 +204,17 @@ public class TrackService {
     /**
      * Given a track_id, finds comments of corresponding track in a matching record of Track database table.
      *
-     * @return List of Integers representing comment ids, if matching record was found, and null otherwise.
+     * @return List of Comment objects, if matching record was found, and null otherwise.
      */
-    public List<Integer> getTrackCommentsWithTrackId(int track_id) {
+    public List<Comment> getTrackCommentsWithTrackId(int track_id) {
         Track track = getTrackWithTrackId(track_id);
         if (track == null) {
             return null;
         } else {
-            String comments = track.getComments();
-            if (comments == null || comments.equals("")) {
-                return null;
-            }
-            String[] commentIds = comments.split("\\|");
-            ArrayList<Integer> arrayOfCommentIds = new ArrayList<>();
-            for (String str : commentIds) {
-                arrayOfCommentIds.add(Integer.parseInt(str));
-            }
-            return arrayOfCommentIds;
+            CommentService cs = new CommentService();
+            List<Comment> result = cs.getCommentsWithTrackId(track_id);
+            cs.closeHandler();
+            return result;
         }
     }
 
@@ -296,7 +291,6 @@ public class TrackService {
         track.setMusicUrl(updated_track.getMusicUrl());
         track.setCoverUrl(updated_track.getCoverUrl());
         track.setStreams(updated_track.getStreams());
-        track.setComments(updated_track.getComments());
 
         transaction.commit();
 
@@ -324,80 +318,6 @@ public class TrackService {
         transaction.commit();
 
         return track;
-    }
-
-    /**
-     * Given track_id and comment_id, finds comment with corresponding comment_id in track's comments
-     * in a corresponding record in Track database table.
-     *
-     * @return index of comments' string, if comment with corresponding comment_id was found.
-     * @throws jakarta.persistence.NoResultException,    if comment was not found.
-     * @throws jakarta.persistence.PersistenceException, if track was not found.
-     */
-    public int findCommentInTracksComments(int track_id, int comment_id) throws NoResultException, PersistenceException {
-        Track track = getTrackWithTrackId(track_id);
-        if (track == null) {
-            throw new jakarta.persistence.PersistenceException("track was not found");
-        }
-
-        String currentComments = track.getComments();
-
-        if (currentComments == null) {
-            throw new jakarta.persistence.NoResultException("comment was not found");
-        } else {
-            int commentIdx = currentComments.indexOf("|" + comment_id + "|");
-            if (commentIdx == -1) {
-                commentIdx = currentComments.indexOf(comment_id + "|");
-                if (commentIdx != 0) {
-                    throw new jakarta.persistence.NoResultException("comment was not found");
-                } else {
-                    return commentIdx;
-                }
-            } else {
-                return commentIdx;
-            }
-        }
-    }
-
-    /**
-     * Given track_id and comment_id, adds comment with corresponding comment_id to track's comments
-     * in a corresponding record in Track database table.
-     *
-     * @return true, if comment with corresponding comment_id was added to comments successfully,
-     * and false, if comment is already in comments.
-     * @throws jakarta.persistence.PersistenceException, if track_id is invalid.
-     */
-    public synchronized boolean addCommentToCommentsWithTrackId(int track_id, int comment_id) throws PersistenceException {
-        int commentIdx;
-        try {
-            commentIdx = findCommentInTracksComments(track_id, comment_id);
-        } catch (jakarta.persistence.NoResultException e) {
-            commentIdx = -1;
-        }
-
-        if (commentIdx >= 0) {
-            return false;
-        }
-
-        EntityTransaction transaction = entityManager.getTransaction();
-
-        transaction.begin();
-
-        Track track = entityManager.getReference(Track.class, track_id);
-        String currentComments = track.getComments();
-
-        String newComments;
-        if (currentComments == null) {
-            newComments = comment_id + "|";
-        } else {
-            newComments = currentComments + comment_id + "|";
-        }
-
-        track.setComments(newComments);
-
-        transaction.commit();
-
-        return true;
     }
 
     /**
