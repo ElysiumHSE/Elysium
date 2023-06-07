@@ -37,6 +37,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         setupRecyclerView()
         subscribeToObservers()
 
+        searchAdapter.setItemClickListener {
+            mainViewModel.playOrToggleSong(it)
+        }
+
         binding.evInputRequest.doAfterTextChanged {
             val request = it.toString()
             searchViewModel.provideSearch(request)

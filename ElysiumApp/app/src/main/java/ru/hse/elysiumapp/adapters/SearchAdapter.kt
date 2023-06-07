@@ -17,6 +17,12 @@ class SearchAdapter @Inject constructor(
 
     var songs: List<Song> = emptyList()
 
+    private var onItemClickListener: ((Song) -> Unit)? = null
+
+    fun setItemClickListener(listener: (Song) -> Unit) {
+        onItemClickListener = listener
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         return SearchViewHolder(
             LayoutInflater.from(parent.context).inflate(
@@ -35,6 +41,11 @@ class SearchAdapter @Inject constructor(
             tvPrimary.text = song.name
             tvSecondary.text = song.author
             glide.load(song.coverUrl).into(ivItemImage)
+            root.setOnClickListener {
+                onItemClickListener?.let { click ->
+                    click(song)
+                }
+            }
         }
     }
 
