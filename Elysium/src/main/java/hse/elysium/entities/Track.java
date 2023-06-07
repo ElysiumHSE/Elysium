@@ -1,3 +1,4 @@
+
 package hse.elysium.entities;
 
 import jakarta.persistence.*;
@@ -31,9 +32,6 @@ public class Track {
     @Basic
     @Column(name = "streams")
     private Integer streams;
-    @Basic
-    @Column(name = "comments")
-    private String comments;
 
     public int getTrackId() {
         return trackId;
@@ -99,24 +97,16 @@ public class Track {
         this.streams = streams;
     }
 
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Track track = (Track) o;
-        return trackId == track.trackId && Objects.equals(name, track.name) && Objects.equals(author, track.author) && Objects.equals(genre, track.genre) && Objects.equals(mood, track.mood) && Objects.equals(musicUrl, track.musicUrl) && Objects.equals(coverUrl, track.coverUrl) && Objects.equals(streams, track.streams) && Objects.equals(comments, track.comments);
+        return trackId == track.trackId && Objects.equals(name, track.name) && Objects.equals(author, track.author) && Objects.equals(genre, track.genre) && Objects.equals(mood, track.mood) && Objects.equals(musicUrl, track.musicUrl) && Objects.equals(coverUrl, track.coverUrl) && Objects.equals(streams, track.streams);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(trackId, name, author, genre, mood, musicUrl, coverUrl, streams, comments);
+        return Objects.hash(trackId, name, author, genre, mood, musicUrl, coverUrl, streams);
     }
 }
