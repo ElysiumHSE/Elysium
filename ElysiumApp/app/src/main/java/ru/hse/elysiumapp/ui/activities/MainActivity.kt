@@ -67,14 +67,45 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        binding.ivSearch.setOnClickListener {
+            binding.navHostFragment.getFragment<Fragment>().findNavController().navigate(
+                R.id.globalActionToSearchFragment
+            )
+        }
+
         binding.navHostFragment.getFragment<Fragment>().findNavController()
             .addOnDestinationChangedListener { _, destination, _ ->
                 when (destination.id) {
-                    R.id.songFragment -> hideBottomBar()
-                    R.id.homeFragment -> showBottomBar()
-                    else -> showBottomBar()
+                    R.id.songFragment -> {
+                        hideTopBar()
+                        hideBottomBar()
+                    }
+                    R.id.homeFragment -> {
+                        showTopBar()
+                        showBottomBar()
+                    }
+                    R.id.searchFragment -> {
+                        hideTopBar()
+                        showBottomBar()
+                    }
+                    else -> {
+                        showTopBar()
+                        showBottomBar()
+                    }
                 }
             }
+    }
+
+    private fun hideTopBar() {
+        binding.ivUser.isVisible = false
+        binding.tvTitle.isVisible = false
+        binding.ivSearch.isVisible = false
+    }
+
+    private fun showTopBar() {
+        binding.ivUser.isVisible = true
+        binding.tvTitle.isVisible = true
+        binding.ivSearch.isVisible = true
     }
 
     private fun hideBottomBar() {

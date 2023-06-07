@@ -16,7 +16,13 @@
         android:id="@+id/commentsFragment"
         android:name="ru.hse.elysiumapp.ui.fragments.CommentsFragment"
         android:label="CommentsFragment" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="ru.hse.elysiumapp.ui.fragments.SearchFragment"
+        android:label="SearchFragment" />
 
     <action android:id="@+id/globalActionToSongFragment"
         app:destination="@+id/songFragment" />
+    <action android:id="@+id/globalActionToSearchFragment"
+        app:destination="@+id/searchFragment" />
 </navigation>
