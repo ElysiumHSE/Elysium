@@ -28,7 +28,7 @@ public class CommentService {
      * Given a comment_id, finds matching record in Comment database table.
      * @return Object of class Comment, if matching record was found, and null otherwise.
      */
-    public Comment getCommentWithCommentId(int comment_id) {
+    public synchronized Comment getCommentWithCommentId(int comment_id) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         Comment comment;
@@ -57,7 +57,7 @@ public class CommentService {
      * @return List of Comment objects, if at least one comment_id from given List was matched successfully,
      * and null, if no matches were found.
      */
-    public List<Comment> getCommentsWithCommentIds(List<Integer> arrayOfCommentIds) {
+    public synchronized List<Comment> getCommentsWithCommentIds(List<Integer> arrayOfCommentIds) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<Comment> array;

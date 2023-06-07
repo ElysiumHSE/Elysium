@@ -12,7 +12,6 @@ import ru.hse.elysiumapp.data.entities.Comment
 import ru.hse.elysiumapp.forms.CommentRequestForm
 import ru.hse.elysiumapp.network.AddCommentsError
 import ru.hse.elysiumapp.network.CredentialsHolder
-import ru.hse.elysiumapp.network.LoginError
 import ru.hse.elysiumapp.other.Constants
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -20,7 +19,7 @@ import java.util.concurrent.CountDownLatch
 
 class CommentDatabase {
 
-    val client = CredentialsHolder.client
+    private val client = CredentialsHolder.client
 
     suspend fun loadAllComments(trackId: Int): List<Comment> {
         return try {
@@ -50,7 +49,7 @@ class CommentDatabase {
                     when (response.code) {
                         (HttpURLConnection.HTTP_UNAUTHORIZED) -> {
                             result = emptyList()
-                            Log.println(Log.WARN, "Unauthorized", "You are suddenly unauthorized")
+                            Log.println(Log.WARN, "loadAllComments", "You are suddenly unauthorized")
                         }
                         (HttpURLConnection.HTTP_NO_CONTENT) -> {
                             result = emptyList()
