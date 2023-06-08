@@ -16,8 +16,6 @@ import ru.hse.elysiumapp.other.Constants
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -32,10 +30,15 @@ class CommentDatabase {
     private val cacheLock: Lock = ReentrantLock()
 
     private fun addToCache(trackId: Int, comments: List<Comment>) {
+        if (comments.isEmpty()) return
         cacheLock.withLock {
             if (cacheList.contains(trackId)) return
             if (cacheList.size == 3) {
-                Log.println(Log.INFO, "removed track id from comment cache", cacheList.first().toString())
+                Log.println(
+                    Log.INFO,
+                    "removed track id from comment cache",
+                    cacheList.first().toString()
+                )
                 cached.remove(cacheList.first())
                 cacheList.removeAt(0)
             }
