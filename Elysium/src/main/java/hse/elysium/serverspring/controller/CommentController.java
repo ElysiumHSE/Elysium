@@ -30,25 +30,8 @@ public class CommentController {
 
     @PostMapping("/addComment")
     ResponseEntity<Integer> addComment(@RequestBody CommentRequest commentForm, @RequestAttribute("UserId") Integer userId) {
-        int commentId = commentService.addNewCommentWithAllParams(userId, commentForm.getContent());
-        trackService.addCommentToCommentsWithTrackId(commentForm.getTrackId(), commentId);
+        int commentId = commentService.addNewCommentWithAllParams(userId, commentForm.getContent(), commentForm.getTrackId());
         return new ResponseEntity<>(commentId, HttpStatus.OK);
-    }
-
-    @GetMapping("/loadComments")
-    ResponseEntity<List<CommentResponse>> loadComments(@RequestParam int trackId, @RequestAttribute("UserId") Integer userId) {
-        if (!commentLoaders.containsKey(userId)) {
-            commentLoaders.put(userId, new CommentLoader(commentService, trackService));
-        }
-        List<Comment> comments = commentLoaders.get(userId).loadNextComments(trackId);
-        if (comments == null) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        }
-        List<CommentResponse> commentResponses = comments.stream().map(comment -> new CommentResponse(trackId,
-                comment.getCommentId(),
-                userService.getUserLoginWithUserId(comment.getUserId()),
-                comment.getContent())).toList();
-        return new ResponseEntity<>(commentResponses, HttpStatus.OK);
     }
 
     @GetMapping("/loadAllComments")
@@ -61,7 +44,6 @@ public class CommentController {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
         List<CommentResponse> commentResponses = comments.stream().map(comment -> new CommentResponse(trackId,
-                comment.getCommentId(),
                 userService.getUserLoginWithUserId(comment.getUserId()),
                 comment.getContent())).toList();
         return new ResponseEntity<>(commentResponses, HttpStatus.OK);
