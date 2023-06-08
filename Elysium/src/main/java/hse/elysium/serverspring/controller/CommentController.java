@@ -38,13 +38,18 @@ public class CommentController {
     @PostMapping("/addComment")
     ResponseEntity<CommentResponse> addComment(@RequestBody CommentRequest commentForm, @RequestAttribute("UserId") Integer userId) {
         int commentId = commentService.addNewCommentWithAllParams(userId, commentForm.getContent(), commentForm.getTrackId());
-        return new ResponseEntity<>(commentToResponse(commentForm.getTrackId(), commentService.getCommentWithCommentId(commentId)), HttpStatus.OK);
+        Comment comment = commentService.getCommentWithCommentId(commentId);
+        if (!commentLoaders.containsKey(userId)) {
+            commentLoaders.put(userId, new CommentLoader(commentService));
+        }
+        commentLoaders.get(userId).updateCache(commentForm.getTrackId(), comment);
+        return new ResponseEntity<>(commentToResponse(commentForm.getTrackId(), comment), HttpStatus.OK);
     }
 
     @GetMapping("/loadAllComments")
     ResponseEntity<List<CommentResponse>> loadAllComments(@RequestParam int trackId, @RequestAttribute("UserId") Integer userId) {
         if (!commentLoaders.containsKey(userId)) {
-            commentLoaders.put(userId, new CommentLoader(commentService, trackService));
+            commentLoaders.put(userId, new CommentLoader(commentService));
         }
         List<Comment> comments = commentLoaders.get(userId).loadAllComments(trackId);
         if (comments == null) {
