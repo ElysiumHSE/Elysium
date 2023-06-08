@@ -28,10 +28,17 @@ public class CommentController {
     private final Map<Integer, CommentLoader> commentLoaders = new ConcurrentHashMap<>();
     private final UserService userService;
 
+    private CommentResponse commentToResponse(int trackId, Comment comment) {
+        return new CommentResponse(trackId,
+                userService.getUserLoginWithUserId(comment.getUserId()),
+                comment.getContent(),
+                comment.getTime());
+    }
+
     @PostMapping("/addComment")
-    ResponseEntity<Integer> addComment(@RequestBody CommentRequest commentForm, @RequestAttribute("UserId") Integer userId) {
+    ResponseEntity<CommentResponse> addComment(@RequestBody CommentRequest commentForm, @RequestAttribute("UserId") Integer userId) {
         int commentId = commentService.addNewCommentWithAllParams(userId, commentForm.getContent(), commentForm.getTrackId());
-        return new ResponseEntity<>(commentId, HttpStatus.OK);
+        return new ResponseEntity<>(commentToResponse(commentForm.getTrackId(), commentService.getCommentWithCommentId(commentId)), HttpStatus.OK);
     }
 
     @GetMapping("/loadAllComments")
@@ -43,9 +50,7 @@ public class CommentController {
         if (comments == null) {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
-        List<CommentResponse> commentResponses = comments.stream().map(comment -> new CommentResponse(trackId,
-                userService.getUserLoginWithUserId(comment.getUserId()),
-                comment.getContent())).toList();
+        List<CommentResponse> commentResponses = comments.stream().map(comment -> commentToResponse(trackId, comment)).toList();
         return new ResponseEntity<>(commentResponses, HttpStatus.OK);
     }
 }
