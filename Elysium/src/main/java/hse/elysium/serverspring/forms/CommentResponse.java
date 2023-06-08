@@ -11,7 +11,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class CommentResponse {
     int trackId;
-    int commentId;
     String username;
     String content;
     Timestamp time;
