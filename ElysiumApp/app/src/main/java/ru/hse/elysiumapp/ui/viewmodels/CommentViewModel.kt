@@ -23,7 +23,7 @@ class CommentViewModel @Inject constructor(
     fun loadComments(trackId: Int) {
         _commentItems.postValue(Resource.loading(null))
         MusicService.loadCommentsForTrack(trackId) { result ->
-            _commentItems.postValue(Resource.success(result))
+            _commentItems.postValue(Resource.success(result.reversed()))
         }
     }
 
@@ -35,7 +35,7 @@ class CommentViewModel @Inject constructor(
     fun uploadCommentAndUpdate(trackId: Int, content: String) {
         _commentItems.postValue(Resource.loading(null))
         MusicService.uploadCommentAndUpdate(trackId, content) { result ->
-            _commentItems.postValue(Resource.success(result))
+            _commentItems.postValue(Resource.success(result.reversed()))
         }
     }
 }

@@ -71,6 +71,7 @@ class CommentsFragment(
                 Status.ERROR -> showNoComments()
                 Status.LOADING -> showLoading()
             }
+            commentAdapter.notifyDataSetChanged()
         }
         commentViewModel.curPlayingSong.observe(this@CommentsFragment) {
             val curPlayingSong = it?.toSong() ?: return@observe

@@ -20,6 +20,9 @@ public class Comment {
     @Basic
     @Column(name = "time")
     private Timestamp time;
+    @Basic
+    @Column(name = "track_id")
+    private int trackId;
 
     public int getCommentId() {
         return commentId;
@@ -35,6 +38,14 @@ public class Comment {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public int getTrackId() {
+        return trackId;
+    }
+
+    public void setTrackId(int trackId) {
+        this.trackId = trackId;
     }
 
     public String getContent() {
@@ -58,13 +69,13 @@ public class Comment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Comment comment = (Comment) o;
-        return commentId == comment.commentId && userId == comment.userId
+        return commentId == comment.commentId && userId == comment.userId && trackId == comment.trackId
                 && Objects.equals(content, comment.content)
                 && Objects.equals(time, comment.time);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(commentId, userId, content, time);
+        return Objects.hash(commentId, userId, content, time, trackId);
     }
 }

@@ -45,4 +45,6 @@ bin/
 ### Mac OS ###
 .DS_Store
 
+Dockerfile/
+
 src/main/resources/META-INF/persistence.xml

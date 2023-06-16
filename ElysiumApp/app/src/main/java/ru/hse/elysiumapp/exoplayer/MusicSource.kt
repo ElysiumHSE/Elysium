@@ -15,7 +15,9 @@ import ru.hse.elysiumapp.exoplayer.State.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.hse.elysiumapp.data.entities.Comment
+import ru.hse.elysiumapp.data.entities.Song
 import ru.hse.elysiumapp.data.remote.CommentDatabase
+import ru.hse.elysiumapp.other.Constants.TYPOS_IN_SEARCH
 import javax.inject.Inject
 
 class MusicSource @Inject constructor(
@@ -50,6 +52,11 @@ class MusicSource @Inject constructor(
 
     suspend fun uploadComment(trackId: Int, content: String) {
         commentDatabase.addComment(trackId, content)
+    }
+
+    suspend fun provideSearch(request: String, applySongs: (List<Song>) -> Unit) {
+        val foundSongs = musicDatabase.searchWithTypos(request, TYPOS_IN_SEARCH)
+        applySongs(foundSongs)
     }
 
     fun asMediaSource(dataSourceFactory: DefaultDataSource.Factory): ConcatenatingMediaSource {

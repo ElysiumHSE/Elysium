@@ -3,68 +3,57 @@ package hse.elysium.serverspring.loaders;
 import hse.elysium.databaseInteractor.CommentService;
 import hse.elysium.databaseInteractor.TrackService;
 import hse.elysium.entities.Comment;
+import hse.elysium.serverspring.auth.AuthenticationFilter;
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.IntStream;
 
 @Configurable
 @ComponentScan("hse.elysium")
 @AllArgsConstructor
 public class CommentLoader {
 
+    private final Logger log = LogManager.getLogger(AuthenticationFilter.class);
     private CommentService commentService;
-    private TrackService trackService;
-    private final Map<Integer, Integer> amountLoaded = new ConcurrentHashMap<>();
-    private final Map<Integer, List<Integer>> loadedCommentIdListForTrack = new ConcurrentHashMap<>();
-    private final List<Integer> cachedComments = new CopyOnWriteArrayList<>();
+    private final Map<Integer, List<Comment>> cached = new HashMap<>();
+    private final List<Integer> cachedList = new ArrayList<>();
     private static final int AMOUNT_OF_CACHED_COMMENTS = 5;
-    private static final int AMOUNT_OF_LOADED_COMMENTS_PER_REQUEST = 10;
 
-    private List<Comment> loadFromCached(int track_id) {
-        int loaded = amountLoaded.get(track_id);
-        List<Integer> comments = loadedCommentIdListForTrack.get(track_id);
-        if (loaded == comments.size()) {
-            return null;
+    private synchronized void addToCache(int trackId, List<Comment> comments) {
+        if (comments.isEmpty()) return;
+        if (cachedList.size() == AMOUNT_OF_CACHED_COMMENTS) {
+            cached.remove(cachedList.get(0));
+            log.info("Removed from cache " + cachedList.get(0));
+            cachedList.remove(0);
         }
-        int toLoad = Math.min(AMOUNT_OF_LOADED_COMMENTS_PER_REQUEST, comments.size() - loaded);
-        List<Comment> res = commentService.getCommentsWithCommentIds(
-                IntStream.rangeClosed(loaded, loaded + toLoad - 1)
-                        .boxed()
-                        .map(comments::get)
-                        .toList());
-        amountLoaded.put(track_id, loaded + toLoad);
-        return res;
+        cachedList.add(trackId);
+        cached.put(trackId, comments);
+        log.info("Added to cache " + trackId);
     }
 
-    private void addToCache(int track_id) {
-        if (cachedComments.size() == AMOUNT_OF_CACHED_COMMENTS) {
-            int deleted = cachedComments.get(0);
-            cachedComments.remove(0);
-            amountLoaded.remove(deleted);
-            loadedCommentIdListForTrack.remove(deleted);
-        }
-        cachedComments.add(track_id);
-        amountLoaded.put(track_id, 0);
-        List<Integer> commentList = trackService.getTrackCommentsWithTrackId(track_id);
-        loadedCommentIdListForTrack.put(track_id, commentList);
+    private synchronized List<Comment> loadFromCache(int trackId) {
+        if (!cachedList.contains(trackId)) return null;
+        log.info("Loaded from cache " + trackId);
+        return cached.get(trackId);
     }
 
-    public List<Comment> loadNextComments(int track_id) {
-        if (!cachedComments.contains(track_id)) {
-            addToCache(track_id);
+    public synchronized void updateCache(int trackId, Comment comment) {
+        if (cachedList.contains(trackId)) {
+            cached.get(trackId).add(comment);
         }
-        return loadFromCached(track_id);
     }
 
-    public List<Comment> loadAllComments(int track_id) {
-        List<Integer> commentIds = trackService.getTrackCommentsWithTrackId(track_id);
-        if (commentIds == null) return null;
-        return commentService.getCommentsWithCommentIds(commentIds);
+    public List<Comment> loadAllComments(int trackId) {
+        List<Comment> comments = loadFromCache(trackId);
+        if (comments != null) return comments;
+        comments = commentService.getCommentsWithTrackId(trackId);
+        addToCache(trackId, comments);
+        return comments;
     }
 
 }

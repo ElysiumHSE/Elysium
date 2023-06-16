@@ -23,4 +23,8 @@
     <string name="comment">Comment</string>
     <string name="song_author_placeholder">Author</string>
     <string name="no_comments">No comments</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_hint">Track, author</string>
+    <string name="nothing">Nothing</string>
 </resources>

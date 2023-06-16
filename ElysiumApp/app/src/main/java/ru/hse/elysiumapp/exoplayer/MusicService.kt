@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import ru.hse.elysiumapp.data.entities.Comment
+import ru.hse.elysiumapp.data.entities.Song
 import ru.hse.elysiumapp.exoplayer.callbacks.MusicPlaybackPreparer
 import ru.hse.elysiumapp.exoplayer.callbacks.MusicPlayerEventListener
 import ru.hse.elysiumapp.exoplayer.callbacks.MusicPlayerNotificationListener
@@ -69,6 +70,9 @@ class MusicService : MediaBrowserServiceCompat() {
             private set
 
         lateinit var uploadCommentAndUpdate: (Int, String, (List<Comment>) -> Unit) -> Unit
+            private set
+
+        lateinit var requestSearch: (String, (List<Song>) -> Unit) -> Unit
             private set
     }
 
@@ -144,6 +148,12 @@ class MusicService : MediaBrowserServiceCompat() {
             serviceScope.launch {
                 musicSource.uploadComment(trackId, content)
                 musicSource.fetchCommentData(trackId, applyComments)
+            }
+        }
+
+        requestSearch = { request, applySongs ->
+            serviceScope.launch {
+                musicSource.provideSearch(request, applySongs)
             }
         }
     }

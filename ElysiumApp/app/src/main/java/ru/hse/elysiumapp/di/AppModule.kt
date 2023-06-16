@@ -2,6 +2,7 @@ package ru.hse.elysiumapp.di
 
 import android.content.Context
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import dagger.Module
@@ -11,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.hse.elysiumapp.R
 import ru.hse.elysiumapp.adapters.CommentAdapter
+import ru.hse.elysiumapp.adapters.SearchAdapter
 import ru.hse.elysiumapp.adapters.SwipeSongAdapter
 import ru.hse.elysiumapp.exoplayer.MusicServiceConnection
 import ru.hse.elysiumapp.network.AuthProvider
@@ -32,6 +34,12 @@ object AppModule {
 
     @Provides
     fun provideCommentAdapter() = CommentAdapter()
+
+    @Singleton
+    @Provides
+    fun provideSearchAdapter(
+        glide: RequestManager
+    ) = SearchAdapter(glide)
 
     @Singleton
     @Provides
