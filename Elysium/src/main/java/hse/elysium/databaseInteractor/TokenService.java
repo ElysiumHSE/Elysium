@@ -31,7 +31,7 @@ public class TokenService {
      * @return token_id of corresponding token, if matching record was found.
      * @throws jakarta.persistence.NoResultException, if matching record was not found.
      */
-    public int getTokenIdWithTokenValue(String token_value) throws NoResultException {
+    public synchronized int getTokenIdWithTokenValue(String token_value) throws NoResultException {
         EntityTransaction transaction = entityManager.getTransaction();
 
         int token_id;
@@ -57,7 +57,7 @@ public class TokenService {
      * @return Object of class Token, if matching record was found.
      * @throws jakarta.persistence.NoResultException, if matching record was not found.
      */
-    public Token getTokenWithTokenValue(String token_value) throws NoResultException {
+    public synchronized Token getTokenWithTokenValue(String token_value) throws NoResultException {
         int token_id = getTokenIdWithTokenValue(token_value);
 
         EntityTransaction transaction = entityManager.getTransaction();

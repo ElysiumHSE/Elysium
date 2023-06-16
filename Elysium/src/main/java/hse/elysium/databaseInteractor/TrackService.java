@@ -37,7 +37,7 @@ public class TrackService {
      * @return List of Track objects, if at least one track_id from given List was matched successfully,
      * and null, if no matches were found.
      */
-    public List<Track> getTracksWithTrackIds(List<Integer> arrayOfTrackIds) {
+    public synchronized List<Track> getTracksWithTrackIds(List<Integer> arrayOfTrackIds) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<Track> array;
@@ -67,7 +67,7 @@ public class TrackService {
      * @return List of Track objects, if at least one track is present,
      * and null, if no matches were found.
      */
-    public List<Track> getAllTracks() {
+    public synchronized List<Track> getAllTracks() {
         EntityTransaction transaction = entityManager.getTransaction();
 
         ArrayList<Track> array;
@@ -177,7 +177,7 @@ public class TrackService {
      *
      * @return Object of class Track, if matching record was found, and null otherwise.
      */
-    public Track getTrackWithTrackId(int track_id) {
+    public synchronized Track getTrackWithTrackId(int track_id) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         Track track;
@@ -264,7 +264,7 @@ public class TrackService {
      *
      * @return track_id of new record
      */
-    public synchronized int addNewTrackWithNameAuthorGenreMood(String name, String author, String genre, String mood) {
+    public int addNewTrackWithNameAuthorGenreMood(String name, String author, String genre, String mood) {
         return addNewTrackWithAllParams(name, author, genre, mood, null, null);
     }
 

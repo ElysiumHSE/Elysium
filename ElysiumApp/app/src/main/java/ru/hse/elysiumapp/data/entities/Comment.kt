@@ -1,5 +1,6 @@
 package ru.hse.elysiumapp.data.entities
 
+import com.google.gson.annotations.SerializedName
 import java.sql.Timestamp
 
 data class Comment(
@@ -7,5 +8,7 @@ data class Comment(
     val commentId: Int? = null,
     val username: String? = null,
     val content: String? = null,
+
+    @SerializedName("time")
     val publicationDatetime: Timestamp? = null
 )
