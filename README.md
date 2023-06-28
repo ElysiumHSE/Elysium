@@ -13,7 +13,6 @@ in multi-threaded mode with a high load.<br/><br/>
   <img src="https://github.com/ElysiumHSE/Elysium/blob/release/Screenshots/fullTrack.jpg" height="400" hspace="7" />
   <img src="https://github.com/ElysiumHSE/Elysium/blob/release/Screenshots/comments.jpg" height="400" hspace="7" /> 
   <img src="https://github.com/ElysiumHSE/Elysium/blob/release/Screenshots/search.jpg" height="400" hspace="7" />
-  <img src="https://github.com/ElysiumHSE/Elysium/blob/release/Screenshots/quickAccessBar.jpg" height="400" hspace="7" />
 </p>
 
 [Features](#Features)<br/>
