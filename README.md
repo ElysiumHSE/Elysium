@@ -37,6 +37,14 @@ in multi-threaded mode with a high load.<br/><br/>
 * Open-source, expandable and absolutely free
 
 ## Installation
+* Clone this repo
+* Open Elysium folder via IntelliJ IDEA 
+   * Insert your database parameters into 
+[persistence.xml](https://github.com/ElysiumHSE/Elysium/blob/release/Elysium/src/main/resources/META-INF/persistence.xml)
+   * Run server
+* Open ElysiumApp folder in Android Studio
+   * Run app
+* Enjoy!
 
 ## License
 [MIT License](https://github.com/ElysiumHSE/Elysium/blob/master/LICENSE)
