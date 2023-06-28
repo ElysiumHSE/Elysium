@@ -44,7 +44,7 @@ in multi-threaded mode with a high load.<br/><br/>
    * Run server
 * Open ElysiumApp folder in Android Studio
   * Setup Firebase Storage
-    * Create new project at Firebase Console, setup Storage with sources of tracks and covers and duplicate them to your database
+    * Create new project at Firebase Console, setup Storage with sources of tracks and covers and paste URLs of them to your database
     * Link your project with Android Studio
   * Run app
 * Enjoy!
