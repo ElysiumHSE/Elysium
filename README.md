@@ -23,7 +23,7 @@ in multi-threaded mode with a high load.<br/><br/>
 * Android application
    * Pleasant and intuitive interface
    * Smooth eye-safe dark theme
-* Authentification
+* Authentication
    * Provides one's own access to app and keeps your account safe!
 * A music player itself
    * Neat player panel inside app & same on quick access bar
@@ -43,7 +43,10 @@ in multi-threaded mode with a high load.<br/><br/>
 [persistence.xml](https://github.com/ElysiumHSE/Elysium/blob/release/Elysium/src/main/resources/META-INF/persistence.xml)
    * Run server
 * Open ElysiumApp folder in Android Studio
-   * Run app
+  * Setup Firebase Storage
+    * Create new project at Firebase Console, setup Storage with sources of tracks and covers and duplicate them to your database
+    * Link your project with Android Studio
+  * Run app
 * Enjoy!
 
 ## License
