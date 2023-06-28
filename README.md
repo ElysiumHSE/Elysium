@@ -42,7 +42,7 @@ in multi-threaded mode with a high load.<br/><br/>
    * Insert your database parameters into 
 [persistence.xml](https://github.com/ElysiumHSE/Elysium/blob/release/Elysium/src/main/resources/META-INF/persistence.xml)
    * Create gradle.properties file on path Elysium/Elysium
-   * Insert this text: JWT_SECRET_KEY="{your secret key}". Key can be generated via online resources(for example [here](https://generate-random.org/encryption-key-generator?count=1&bytes=32&cipher=aes-256-cbc&string=&password=)
+   * Insert this text: JWT_SECRET_KEY="{your secret key}". Key can be generated via online resources(for example [here](https://generate-random.org/encryption-key-generator?count=1&bytes=32&cipher=aes-256-cbc&string=&password=))
    * Run server via IntelliJ IDEA
 
 * Open ElysiumApp folder in Android Studio
