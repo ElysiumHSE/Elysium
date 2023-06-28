@@ -8,8 +8,17 @@ and fast algorithms ensure high performance and speed of the application.
 In our project we tried to pay attention on details, in particular its quality 
 in multi-threaded mode with a high load.<br/><br/>
 
+<p align="middle">
+  <img src="https://github.com/ElysiumHSE/Elysium/blob/release/Screenshots/mainPage.jpg" height="400" hspace="7" />
+  <img src="https://github.com/ElysiumHSE/Elysium/blob/release/Screenshots/fullTrack.jpg" height="400" hspace="7" />
+  <img src="https://github.com/ElysiumHSE/Elysium/blob/release/Screenshots/comments.jpg" height="400" hspace="7" /> 
+  <img src="https://github.com/ElysiumHSE/Elysium/blob/release/Screenshots/search.jpg" height="400" hspace="7" />
+  <img src="https://github.com/ElysiumHSE/Elysium/blob/release/Screenshots/quickAccessBar.jpg" height="400" hspace="7" />
+</p>
+
 [Features](#Features)<br/>
 [Installation](#Installation)<br/>
+[License](#License)<br/>
 
 ## Features
 * Android application
